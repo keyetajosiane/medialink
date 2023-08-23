@@ -1,10 +1,6 @@
 const mysql = require('mysql');
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'mediateque'
-  });
+const {connection} = require('./connection');
+console.log("Starting database initialization");
   connection.connect((err) => {
     if (err) throw err;
     console.log('Connected!');
@@ -32,7 +28,7 @@ const connection = mysql.createConnection({
   });
 
  var sql=`create table if not exists apprenant(
-    id int auto_increment primary key,
+    apprenant_id int auto_increment primary key,
     matricule varchar(255) not null unique,
     user_id int not null,
     departement_id int not null,
@@ -77,7 +73,7 @@ connection.query(sql, function (err, result) {
 })
 
 var sql=`CREATE TABLE IF NOT EXISTS formateur (
-  id INT PRIMARY KEY AUTO_INCREMENT,
+  formateur_id INT PRIMARY KEY AUTO_INCREMENT,
  matiere_dispensee VARCHAR(255),
  user_id INT NOT NULL,
   FOREIGN KEY (user_id) REFERENCES user(user_id)
@@ -90,21 +86,13 @@ connection.query(sql, function (err, result) {
 
 
 var sql=`CREATE TABLE IF NOT EXISTS departement_formateur (
+  id INT PRIMARY KEY AUTO_INCREMENT,
   formateur_id INT NOT NULL,
    departement_id INT NOT NULL,
   FOREIGN KEY (formateur_id) REFERENCES formateur(formateur_id),
-  FOREIGN KEY ( departement_id) REFERENCES departement( departement_id)
+  FOREIGN KEY ( departement_id) REFERENCES departement(departement_id)
 )`
 connection.query(sql, function (err, result) {
  if (err) throw err;
  console.log("Table user  departement_formateur créée");
 })
-
-
-
-
-
-
-
-
-

@@ -1,36 +1,30 @@
-const User = require('../Models/userModels');
+const User = require('../models/userModels');
 exports.getAll = async (req, res) => {
   const users = await User.findAll();
   res.json(users);
 };
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
 
     const create_data = req.body;
-    console.log(create_data)
     // check if the email is unique
-    let user = User.findByEmail(create_data.email)
+    let user = await User.findByEmail(create_data.email)
     if (user) {
         throw new Error("email already exist")
     }
 
     // check if the user_name is unique
-    user = User.findByUser_nameOrEmail(create_data.user_name)
+    user = await User.findByUser_nameOrEmail(create_data.user_name)
     if (user) {
         throw new Error("user_name already exist")
     }
-    const result = User.create(create_data)
+    const result = await User.create(create_data)
     if (result === false) {
         throw new Error("Unable to create this user due to an internal server error")
     }
     // return the new user
-    const new_user = User.findByUser_id(result)
+    const new_user = await User.findByUser_id(result)
     res.json(new_user)
 };
-
-
-
-
-
 
 exports.getUserById = async (req, res) => {
   // Récupération de l'ID de l'utilisateur
@@ -41,15 +35,15 @@ exports.getUserById = async (req, res) => {
   res.json(user);
 };
 
-exports.getUserByuser_nameOrEmail = (req, res) => {
+exports.getUserByuser_nameOrEmail = async (req, res) => {
     const {user_name} = req.params;
-    const user = User.findByUser_nameOrEmail(user_name)
+    const user = await User.findByUser_nameOrEmail(user_name)
 
     return res.json(user)
 }
-exports.getUserByEmail = (req, res) => {
+exports.getUserByEmail = async (req, res) => {
     const {email} = req.params;
-    const user = User.findByEmail(email)
+    const user = await User.findByEmail(email)
     return res.json(user)
 }
 exports.update = async (req, res) => {
@@ -58,7 +52,7 @@ exports.update = async (req, res) => {
     // Récupération des données du formulaire
     const user_update_data = req.body;
     // get the user from the database
-    const user = User.findByUser_id(user_id)
+    const user = await User.findByUser_id(user_id)
     // if the user does not exist, throw an error
     if (!user) {
         throw new Error("User not found")
@@ -72,16 +66,16 @@ exports.update = async (req, res) => {
     if(res === null){
         throw new Error("Update failed due to an internal server error")
     };
-    const updated_user = User.findByUser_id(user_id)
+    const updated_user = await User.findByUser_id(user_id)
 
-    return result.json(updated_user)
+    return res.json(updated_user)
 };  
 
 exports.delete = async (req, res) => {
     // Récupération de l'ID de l'utilisateur
     const { user_id } = req.params;
     //   get the user from the database
-    const user = User.findByUser_id(user_id)
+    const user = await User.findByUser_id(user_id)
     if (!user) {
         throw new Error("User not found.")
     }
@@ -90,7 +84,7 @@ exports.delete = async (req, res) => {
     if (res === null) {
         throw new Error("Delete failed due to an internal server error")
     }
-    return result.json({message: "User deleted successfully"})
+    return res.json({message: "User deleted successfully"})
 };
     exports.count = async (req, res) => {
         const users = await User.count();

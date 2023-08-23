@@ -2,7 +2,7 @@ const express = require('express');
 // Création d'un objet router
 const router = express.Router();
 // Importation du module userController
-const userController = require('../Controllers/userController');
+const userController = require('../controllers/userController');
 
 // Définition des routes et des actions du contrôleur
 router.get('/user', userController.getAll); // Affiche la liste des utilisateurs

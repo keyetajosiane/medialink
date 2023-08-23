@@ -12,28 +12,28 @@ const userRouter = require('./routes/userRoutes');
 app.use('/user', userRouter);
 // app.use('/profile', profileRouter);
 
-const departementRouter = require('./routes/departementRoutes');
-app.use('/departement',  departementRouter);
+// const departementRouter = require('./routes/departementRoutes');
+// app.use('/departement',  departementRouter);
 
 
-const ressouceRouter = require('./routes/ressourceRoutes');
-app.use('/ressource', ressouceRouter );
+// const ressouceRouter = require('./routes/ressourceRoutes');
+// app.use('/ressource', ressouceRouter );
 
 
-const permissionRouter = require('./routes/permissionRoutes');
-app.use('/ressource', permissionRouter );
+// const permissionRouter = require('./routes/permissionRoutes');
+// app.use('/ressource', permissionRouter );
 
 
-const apprenantRouter = require('./routes/apprenantRoutes');
-app.use('/ressource', apprenantRouter );
+// const apprenantRouter = require('./routes/apprenantRoutes');
+// app.use('/ressource', apprenantRouter );
 
 
-const formateurRouter = require('./routes/formateurRoutes');
-app.use('/ressource', formateurRouter);
+// const formateurRouter = require('./routes/formateurRoutes');
+// app.use('/ressource', formateurRouter);
 
 
-const administration_membersRouter = require('./routes/administration_membersRoutes');
-app.use('/ressource', administration_membersRouter);
+// const administration_membersRouter = require('./routes/administration_membersRoutes');
+// app.use('/ressource', administration_membersRouter);
 
 
 // Define a catch-all route for 404 errors
@@ -50,3 +50,5 @@ const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
+module.exports = app
