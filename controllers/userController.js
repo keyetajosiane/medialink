@@ -5,7 +5,6 @@ exports.getAll = async (req, res) => {
 };
 exports.create = async (req, res) => {
     const create_data = req.body;
-    console.log(create_data);
     // check if the email is unique
     let user = await User.findByEmail(create_data.email)
     if (user) {
@@ -46,7 +45,10 @@ exports.getUserByuser_nameOrEmail = async (req, res) => {
     return res.json(user)
 }
 exports.getUserByEmail = async (req, res) => {
-    const {email} = req.params;
+    const {email} = req.query;
+    if (!email) {
+        return res.status(400).json({message: "Email is required"})        
+    }
     const user = await User.findByEmail(email)
     return res.json(user)
 }
@@ -59,7 +61,7 @@ exports.update = async (req, res) => {
     const user = await User.findByUser_id(user_id)
     // if the user does not exist, throw an error
     if (!user) {
-        res.status(404).json({ message: "User not found." })
+        return res.status(404).json({ message: "User not found." })
     };
     for(const key of Object.keys(user_update_data)){
         //TODO:: if the key is password, hash the password before saving it
@@ -68,7 +70,7 @@ exports.update = async (req, res) => {
     // Mise à jour de l'utilisateur dans la base de données
     const result = await User.updateUser(user_id, user);
     if(res === null){
-        res.status(500).json({message: "Update failed due to an internal server error"})
+        return res.status(500).json({message: "Update failed due to an internal server error"})
     };
     const updated_user = await User.findByUser_id(user_id)
 
@@ -81,12 +83,12 @@ exports.delete = async (req, res) => {
     //   get the user from the database
     const user = await User.findByUser_id(user_id)
     if (!user) {
-        res.status(404).json({ message: "User not found." })
+        return res.status(404).json({ message: "User not found." })
     }
     // Suppression de l'utilisateur de la base de données
     const result = await User.delete(user_id);
     if (res === null) {
-        res.status(500).json({message: "Delete failed due to an internal server error"})
+        return res.status(500).json({message: "Delete failed due to an internal server error"})
     }
     return res.json({message: "User deleted successfully"})
 };
@@ -94,12 +96,12 @@ exports.delete = async (req, res) => {
         const users = await User.count();
         if (users === null) {
           // renvoyer 0 si le résultat est null
-          res.json(0);
+          return res.json(0);
         } else if (typeof users !== 'number') {
           // lancer une erreur si le résultat n'est pas un nombre
-          res.status(500).json({ message: 'Résultat invalide' });
+          return res.status(500).json({ message: 'Résultat invalide' });
         } else {
           // renvoyer le résultat en JSON
-          res.json(users);
+          return res.json(users);
         }
     };

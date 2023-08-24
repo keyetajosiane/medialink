@@ -118,7 +118,7 @@ class User {
       const [result] = await conn.query('SELECT COUNT(*) FROM user');
       conn.end();
       // Récupération de la première valeur du tableau
-      const count = result['COUNT(*)'];
+      const count = result[0]['COUNT(*)'];
       // Retour de la valeur ou null si elle n'existe pas
       return count;
    }

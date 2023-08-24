@@ -43,10 +43,10 @@ describe('GET /user/:user_id', () => {
 })
 
 // get user by email
-describe('GET /user/email/:email', () => {
+describe('GET /user/email', () => {
   it('should return a user', async () => {
     const res = await request(app)
-      .get('/user/user/email/testuser@example.com')
+      .get('/user/user/email?email=testuser@example.com')
       .expect(200);
     expect(res.body).toEqual(expect.any(Object));
   });
@@ -58,7 +58,8 @@ describe('GET /user/count', () => {
     const res = await request(app)
       .get('/user/user/count')
       .expect(200);
-    expect(res.body).toEqual(expect.any(Object));
+      // test if the result is a number
+    expect(res.body).toEqual(expect.any(Number));
   });
 })
 
