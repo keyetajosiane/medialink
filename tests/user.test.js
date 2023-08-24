@@ -18,7 +18,6 @@ describe('POST /user/create', () => {
       .post('/user/user/create')
       .send(userData)
       .expect(200);
-
     expect(res.body).toEqual(expect.objectContaining(userData));
     user_id = res.body.user_id
   });
