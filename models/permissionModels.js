@@ -5,10 +5,7 @@ const connection = mysql.createConnection({
     password: '',
     database: 'mediateque'
   });
-  connection.connect((err) => {
-    if (err) throw err;
-    console.log('Connected!');
-  })
+  
   // Define the user model class
 class permissions {
 

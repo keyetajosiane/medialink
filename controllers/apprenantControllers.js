@@ -6,12 +6,12 @@ exports.getAll = async (req, res) => {
 exports.insert = (req, res) => {
     const create_data = req.body;
     // check if the id is unique
-    let apprenand = apprenant.getapprenantById(create_data.id)
+    let apprenand = apprenant. findById(create_data.id)
     if (apprenand) {
         throw new Error("id already exist")
     }
     // check if the name is unique
-    apprenand = apprenant.getApprenantByMatricule(create_data.matricule)
+    apprenand = apprenant. findByMatricule(create_data.matricule)
     if (apprenand) {
         throw new Error("matricule already exist")
     }

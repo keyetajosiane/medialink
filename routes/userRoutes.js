@@ -16,3 +16,4 @@ router.delete('/user/:user_id', userController.delete); // Supprime un utilisate
 
 // Exportation du module router
 module.exports = router;
+     
