@@ -1,5 +1,5 @@
 const mysql = require('mysql');
-const {connection} = require('./connection');
+const {connection} = require("./connection");
 console.log("Starting database initialization");
   connection.connect((err) => {
     if (err) throw err;
