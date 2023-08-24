@@ -39,7 +39,10 @@ exports.getUserById = async (req, res) => {
 };
 
 exports.getUserByuser_nameOrEmail = async (req, res) => {
-    const {user_name} = req.params;
+    const {user_name} = req.query;
+    if (!user_name) {
+        return res.status(400).json({message: "User name or email is required"})
+    }
     const user = await User.findByUser_nameOrEmail(user_name)
 
     return res.json(user)
