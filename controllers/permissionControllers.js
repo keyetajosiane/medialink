@@ -24,9 +24,9 @@ exports.insert = async (req, res) => {
         return;
     }
     // return the new user
-    const new_permission =await permission.findBypermissions_id(result)
+    const new_permission = await permission.findByPermissions_id(result)
     res.json(new_permission)
-}; 
+};
 
 exports.getpermissionById = async (req, res) => {
   // Récupération de l'ID de la resssource
