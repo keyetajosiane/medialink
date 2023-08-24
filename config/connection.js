@@ -3,17 +3,17 @@ const _mysql = require("mysql")
 
 const connection = _mysql.createConnection({
     host: 'localhost',
-    user: 'admin',
-    password: 'admin',
-    database: 'mediatheque'
+    user: 'root',
+    password: '',
+    database: 'mediateque'
   });
 
   async function createConnection() {
     const connection = await mysql.createConnection({
       host: 'localhost',
-      user: 'admin',
-      password: 'admin',
-      database: 'mediatheque'
+      user: 'root',
+      password: '',
+      database: 'mediateque'
     });
     return connection;
   }  
