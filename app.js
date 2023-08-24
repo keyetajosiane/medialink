@@ -12,16 +12,20 @@ const userRouter = require('./routes/userRoutes');
 app.use('/user', userRouter);
 // app.use('/profile', profileRouter);
 
- const departementRouter = require('./routes/departementRoutes');
- app.use('/departement',  departementRouter);
+
+
+const permissionRouter = require('./routes/permissionRoutes');
+// const profileRouter = require('./routes/profile');
+// Use the routers for the corresponding routes
+app.use('/permissions', permissionRouter);
+// app.use('/profile', profileRouter);
+
+ //const departementRouter = require('./routes/departementRoutes');
+ //app.use('/departement',  departementRouter);
 
 
 // const ressouceRouter = require('./routes/ressourceRoutes');
 // app.use('/ressource', ressouceRouter );
-
-
-// const permissionRouter = require('./routes/permissionRoutes');
-// app.use('/ressource', permissionRouter );
 
 
 // const apprenantRouter = require('./routes/apprenantRoutes');

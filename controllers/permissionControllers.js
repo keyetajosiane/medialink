@@ -3,26 +3,31 @@ exports.getAll = async (req, res) => {
   const permissions = await permission.findAll();
   res.json(permissions);
 };
-exports.insert = (req, res) => {
+
+exports.insert = async (req, res) => {
     const create_data = req.body;
     // check if the id is unique
-    let permissions = permission.getpermissions_id(create_data.permissions_id)
+    let permissions = await permission.findByPermissions_id(create_data.permissions_id)
     if (permissions) {
-        throw new Error("id already exist")
+        res.status(409).json({ message: "permission_id already exist" });
+        return;
     }
     // check if the name is unique
-    permissions = permission.getpermissionByNom(create_data.nom)
+    permissions = await permission.findByNom(create_data.nom)
     if (permissions) {
-        throw new Error("nom already exist")
+        res.status(409).json({ message: "permission_name already exist" });
+        return;
     }
     const result = permission.insert(create_data)
     if (result === false) {
-        throw new Error("Unable to create this permission due to an internal server error")
+        res.status(500).json({ message: "Unable to create this permission due to an internal server error" });
+        return;
     }
     // return the new user
-    const new_permission = permission.findBypermissions_id(result)
+    const new_permission =await permission.findBypermissions_id(result)
     res.json(new_permission)
 }; 
+
 exports.getpermissionById = async (req, res) => {
   // Récupération de l'ID de la resssource
   const { permissions_id } = req.params;

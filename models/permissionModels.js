@@ -1,30 +1,27 @@
-const mysql = require('mysql');
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'mediateque'
-  });
-  
+const { createConnection } = require('../config/connection');
   // Define the user model class
-class permissions {
-
-   
+class permissions {   
     static async insert(permission) {
-        const conn = await pool.getConnection();
-        await conn.query(
+        try{
+          const conn = await createConnection();
+          const [res] = await conn.query(
             `
-      INSERT INTO permissions  (nom)
+      INSERT INTO permissions (nom)
       VALUES (?)
       `,
             [permission.nom]
         );
-        conn.release();
-    }
+        conn.end();
+         return res.insertId;
+      } catch (error) {
+         console.log(error);
+         return false;
+      }
+   }
 
  // all about find :SELECTE
     static async findByPermissions_id(permissions_id) {
-        const conn = await pool.getConnection();
+        const conn = await createConnection();
         const result = await conn.query('SELECT * FROM permissions WHERE permissions_id = ?', [permissions_id]);
         conn.release();
         return result[0] || null;
