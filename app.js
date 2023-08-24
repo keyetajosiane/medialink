@@ -12,8 +12,8 @@ const userRouter = require('./routes/userRoutes');
 app.use('/user', userRouter);
 // app.use('/profile', profileRouter);
 
-// const departementRouter = require('./routes/departementRoutes');
-// app.use('/departement',  departementRouter);
+ const departementRouter = require('./routes/departementRoutes');
+ app.use('/departement',  departementRouter);
 
 
 // const ressouceRouter = require('./routes/ressourceRoutes');

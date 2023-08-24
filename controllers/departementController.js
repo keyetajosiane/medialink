@@ -6,12 +6,12 @@ exports.getAll = async (req, res) => {
 exports.insert = (req, res) => {
     const create_data = req.body;
     // check if the id is unique
-    let departemen = departement.getDepartement_id(create_data.departement_id)
+    let departemen = departement.findByDepartement_id(create_data.departement_id)
     if (departemen) {
         throw new Error("id already exist")
     }
     // check if the name is unique
-    departemen = departement.getDepartementByNom(create_data.nom_departement)
+    departemen = departement.findByNom_departement(create_data.nom_departement)
     if (departemen) {
         throw new Error("nom already exist")
     }

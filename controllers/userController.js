@@ -56,7 +56,6 @@ exports.getUserByEmail = async (req, res) => {
     return res.json(user)
 }
 exports.update = async (req, res) => {
-  try {
     // Récupération de l'ID de l'utilisateur
     const { user_id } = req.params;
     // Récupération des données du formulaire
@@ -82,7 +81,6 @@ exports.update = async (req, res) => {
 };  
 
 exports.delete = async (req, res) => {
-  try {
     // Récupération de l'ID de l'utilisateur
     const { user_id } = req.params;
     //   get the user from the database
