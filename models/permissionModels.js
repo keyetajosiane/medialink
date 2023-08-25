@@ -39,14 +39,14 @@ class permissions {
     //all about update=mettre a jour   
     static async updateNom(nom) {
         const conn = await createConnection();
-        const result = await conn.query('UPDATE permissions SET nom = ?  WHERE permissions_id = ?', [nom, permissions_id]);
+        const [result] = await conn.query('UPDATE permissions SET nom = ?  WHERE permissions_id = ?', [nom, permissions_id]);
         conn.end();
         return result.affectedRows || null;
     }
     // update all fields of a departement object
     static async updatePermission(permissions_id, permissions) {
         const conn = await createConnection();
-        const result = await conn.query('UPDATE permissions SET ? WHERE permissions_id = ?', [permissions, permissions_id]);
+        const [result] = await conn.query('UPDATE permissions SET ? WHERE permissions_id = ?', [permissions, permissions_id]);
         conn.end();
         return result.affectedRows || null;
     }
@@ -55,21 +55,21 @@ class permissions {
     //all about DELETE 
     static async delete(permissions_id) {//suprimer tt les permissions
         const conn = await createConnection();
-        const result = await conn.query('DELETE FROM permissions WHERE permissions_id = ?', [permissions_id]);
+        const [result] = await conn.query('DELETE FROM permissions WHERE permissions_id = ?', [permissions_id]);
         conn.end();
         return result.affectedRows || null;
     }
     // delete a departement by their name
     static async deleteByNom(nom) {
         const conn = await createConnection();
-        const result = await conn.query('DELETE FROM permissions WHERE nom = ?', [nom]);
+        const [result] = await conn.query('DELETE FROM permissions WHERE nom = ?', [nom]);
         conn.end();
         return result.affectedRows || null;
     }
     // retrieve all departement from the users table
     static async findAll() {
         const conn = await createConnection();
-        const result = await conn.query('SELECT * FROM permissions');
+        const [result] = await conn.query('SELECT * FROM permissions');
         conn.end();
         return result || null;
     }

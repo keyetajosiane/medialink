@@ -32,7 +32,7 @@ exports.getpermissionById = async (req, res) => {
 };
   exports.getpermissionByNom = async (req, res) => {
     // Récupération de l'ID de la ressource
-    const { nom } = req.params;
+    const { nom } = req.query;
     // Recherche de l'utilisateur par ID
     const permissions = await permission.findByNom(nom);
     // Envoi de la réponse au format JSON
@@ -88,7 +88,7 @@ exports.delete = async (req, res) => {
 };
 exports.deleteByNom = async (req, res) => {
     // Récupération de l'ID du departement
-    const {nom} = req.params;
+    const {nom} = req.query;
     //   get the user from the database
     const permissions =  await permission.findByNom(nom)
     if (!permissions) {
