@@ -5,7 +5,7 @@ const connection = _mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'mediateque'
+    database: 'mediatheque'
   });
 
   async function createConnection() {
@@ -13,7 +13,7 @@ const connection = _mysql.createConnection({
       host: 'localhost',
       user: 'root',
       password: '',
-      database: 'mediateque'
+      database: 'mediatheque'
     });
     return connection;
   }  

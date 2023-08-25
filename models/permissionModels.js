@@ -26,6 +26,7 @@ class permissions {
         conn.end();
         return result[0] || null;
     }
+    
     static async findByNom(nom) {
         const conn = await createConnection();
         const [result] = await conn.query('SELECT * FROM permissions WHERE nom = ?', [nom]);
@@ -73,9 +74,11 @@ class permissions {
 // return the total number of users in the permissions table
     static async count() {
         const conn = await createConnection();
-        const result = await conn.query('SELECT COUNT(*) FROM permissions');
+        const [result] = await conn.query('SELECT COUNT(*) FROM permissions');
         conn.end();
-        return result[0] || null;
+        const count = result[0]['COUNT(*)'];
+        // Retour de la valeur ou null si elle n'existe pas
+        return count;
     }
 }
 
