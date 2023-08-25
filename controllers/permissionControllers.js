@@ -8,8 +8,8 @@ exports.insert = async (req, res) => {
     const create_data = req.body;
     // check if the name is unique
      let permissions = await permission.findByNom(create_data.nom)
-    if (permissions) {
-        res.status(409).json({ message: "permission_name already exist" });
+    if (!permissions) {
+        res.status(409).json({ message: "permissionnot found" });
         return;
     }
     const result = await permission.insert(create_data)
@@ -24,7 +24,7 @@ exports.insert = async (req, res) => {
 
 exports.getpermissionById = async (req, res) => {
   // Récupération de l'ID de la resssource
-  const { permissions_id } = req.params;
+  const { permissions_id } = req.query;
   // Recherche de l'utilisateur par ID
   const permissions = await permission.findByPermissions_id(permissions_id);
   // Envoi de la réponse au format JSON
@@ -41,7 +41,7 @@ exports.getpermissionById = async (req, res) => {
 
 exports.updatePermission = async (req, res) => {
     // Récupération de l'ID du departement
-    const {permissions_id} = req.params;
+    const {permissions_id} = req.query;
     // Récupération des données du formulaire
     const permission_update_data = req.body;
     // get the departement from the database
@@ -73,7 +73,7 @@ exports.updateNom = async (req, res) => {
 
 exports.delete = async (req, res) => {
     // Récupération de l'ID de la permission
-    const {permissions_id } = req.params;
+    const {permissions_id } = req.query;
     //   get the user from the database
     const permissions = permission.findByPermissions_id(permissions_id)
     if (!permissions) {
