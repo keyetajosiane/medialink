@@ -3,16 +3,16 @@ const _mysql = require("mysql")
 
 const connection = _mysql.createConnection({
     host: 'localhost',
-    user: 'root',
-    password: '',
+    user: 'admin',
+    password: 'admin',
     database: 'mediatheque'
   });
 
   async function createConnection() {
     const connection = await mysql.createConnection({
       host: 'localhost',
-      user: 'root',
-      password: '',
+      user: 'admin',
+      password: 'admin',
       database: 'mediatheque'
     });
     return connection;
