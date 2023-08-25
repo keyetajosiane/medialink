@@ -20,8 +20,14 @@ const permissionRouter = require('./routes/permissionRoutes');
 app.use('/permissions', permissionRouter);
 // app.use('/profile', profileRouter);
 
- //const departementRouter = require('./routes/departementRoutes');
- //app.use('/departement',  departementRouter);
+
+
+const departementRouter = require('./routes/departementRoutes');
+// const profileRouter = require('./routes/profile');
+// Use the routers for the corresponding routes
+app.use('/departement', departementRouter);
+// app.use('/profile', profileRouter);
+
 
 
 // const ressouceRouter = require('./routes/ressourceRoutes');

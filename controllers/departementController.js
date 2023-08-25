@@ -3,24 +3,21 @@ exports.getAll = async (req, res) => {
   const departemen = await  departement.findAll();
   res.json(departemen);
 };
-exports.insert = (req, res) => {
+exports.insert = async (req, res) => {
     const create_data = req.body;
-    // check if the id is unique
-    let departemen = departement.findByDepartement_id(create_data.departement_id)
-    if (departemen) {
-        throw new Error("id already exist")
-    }
     // check if the name is unique
-    departemen = departement.findByNom_departement(create_data.nom_departement)
+    let departemen =  await departement.findByNom_departement(create_data.nom_departement)
     if (departemen) {
-        throw new Error("nom already exist")
+        res.status(409).json({ message: "nom-departement already exist" });
+        return;
     }
-    const result = departement.insert(create_data)
+    const result =  await departement.insert(create_data)
     if (result === false) {
-        throw new Error("Unable to create this departement due to an internal server error")
+        res.status(500).json({ message: "Unable to create this departement due to an internal server error" });
+        return;
     }
     // return the new user
-    const new_departement = departement.findBypermissions_id(result)
+    const new_departement = departement.findByDepartement_id(result)
     res.json(new_departement)
 };
  

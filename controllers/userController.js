@@ -11,7 +11,6 @@ exports.create = async (req, res) => {
         res.status(409).json({ message: "email already exist" });
         return;
     }
-
     // check if the user_name is unique
     user = await User.findByUser_nameOrEmail(create_data.user_name)
     if (user) {
