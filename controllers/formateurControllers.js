@@ -4,19 +4,19 @@ exports.getAll = async (req, res) => {
   res.json(formateurs);
 };
 
-exports.insert = (req, res) => {
+exports.insert = async (req, res) => {
     const create_data = req.body;
     // check if the id is unique
-    let formateurs = formateur.findById(create_data.formateur_id)
+    let formateurs =await formateur.findById(create_data.formateur_id)
     if (formateurs) {
         throw new Error("id already exist")
     }
-    const result =  formateur.insert(create_data)
+    const result = await formateur.insert(create_data)
     if (result === false) {
         throw new Error("Unable to create this formateur due to an internal server error")
     }
     // return the new formateur
-    const new_formateur = formateur.findById(result)
+    const new_formateur =await formateur.findById(result)
     re.json(new_formateur)
 }; 
 exports.getformateurById = async (req, res) => {

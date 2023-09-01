@@ -1,39 +1,17 @@
-const mysql = require('mysql');
-const { createConnection } = require('mysql2');
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'mediateque'
-  });
+const { createConnection } = require('../config/connection');
   
   // Define the user model class
 class formateur{
-    static async create(user) {
-        try {
-           const conn = await createConnection();
-           const [res] = await conn.query(
-              `
-            INSERT INTO user (user_name, email, password, first_name, last_name, role)
-            VALUES (?, ?, ?, ?, ?, ?)`,
-              [user.user_name, user.email, user.password, user.first_name, user.last_name, user.role]
-           );
-           conn.end();
-           return res.insertId;
-        } catch (error) {
-           console.log(error);
-           return false;
-        }
-     }
+   
     static async insert(formateur) {
         try{
         const conn = await createConnection();
        const [res]= await conn.query(
             `
-      INSERT INTO formateur  (id , matiere_dispensee, user_id, departement_id)
-      VALUES (?,?,?,?)
+      INSERT INTO formateur  (formateur_id , matiere_dispensee, user_id, )
+      VALUES (?,?,?,)
       `,
-            [formateur.id, formateur.matiere_dispensee, formateur.user_id, formateur.departement_id]
+            [formateur.id, formateur.matiere_dispensee, formateur.user_id]
         );
         conn.end();
         return res.insertId;
@@ -44,20 +22,18 @@ class formateur{
   }
 
  // all about find :SELECTE
-    static async findById(id) {
+    static async findById(formateur_id) {
         const conn = await createConnection();
-        const [result] = await conn.query('SELECT * FROM  formateur WHERE id = ?', [id]);
+        const [result] = await conn.query('SELECT * FROM  formateur WHERE formateur_id = ?', [formateur_id]);
         conn.end();
         return result[0] || null;
     }
     static async findBymatiere_dispensee(matiere_dispensee) {
         const conn = await createConnection();
-        const [result] = await conn.query('SELECT * FROM formateur WHERE id = ?', [matiere_dispensee]);
+        const [result] = await conn.query('SELECT * FROM formateur WHERE  matiere_dispensee = ?', [matiere_dispensee]);
         conn.end();
         return result[0] || null;
     }
-
-
  //all about update=mettre a jour   
     static async updateMatiere_dispensee(matiere_dispensee) {
         const conn = await createConnectiont ();
