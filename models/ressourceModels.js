@@ -1,94 +1,97 @@
-const mysql = require('mysql');
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'mediateque'
-});
-
+const { createConnection } = require('../config/connection');
 class ressource {
     //insert ressouces
     static async insert(ressources) {
-        const conn = await pool.getConnection();
-        await conn.query(
+        try{
+        const conn = await createConnection();
+         const [res] = await conn.query(
             `
-      INSERT INTO users (ressorce_name,titlle,description)
+      INSERT INTO ressources (ressouce_name,tittle,description)
       VALUES (?, ?, ?)
       `,
-            [ressources.user_name, ressources.titlle, ressources.description]
+            [ressources.ressouces_name, ressources.tittle, ressources.description]
         );
-        conn.release();
-    }
+        conn.end();
+        return res.insertId;
+     } catch (error) {
+        console.log(error);
+        return false;
+     }
+  }
     //all about a method find
-    static async findByTitlle(titlle) {
-        const conn = await pool.getConnection();
-        const result = await conn.query('SELECT * FROM ressources WHERE titlle = ?', [titlle]);
-        conn.release();
+    static async findByTitlle(tittle) {
+        const conn = await createConnection();
+        const [result] = await conn.query('SELECT * FROM ressources WHERE  tittle = ?', [tittle]);
+        conn.end();
         return result[0] || null;
     }
-    static async findByRessources_id(ressouces_id) {
-        const conn = await pool.getConnection();
-        const result = await conn.query('SELECT * FROM ressources WHERE ressouces_id = ?', [ressouces_id]);
-        conn.release();
+    static async findByRessources_id(ressources_id) {
+        const conn = await createConnection();
+        const [result] = await conn.query('SELECT * FROM ressources WHERE  	ressources_id = ?', [ressources_id]);
+        conn.end();
         return result[0] || null;
     }
-    static async findAll() {
-        const conn = await pool.getConnection();
-        const result = await conn.query('SELECT * FROM ressources');
-        conn.release();
-        return result || null;
-    }
+    
     static async findByDescription(description) {
-        const conn = await pool.getConnection();
-        const result = await conn.query('SELECT * FROM  ressources WHERE  description = ?', [description]);
-        conn.release();
+        const conn = await createConnection();
+        const [result] = await conn.query('SELECT * FROM  ressources WHERE  description = ?', [description]);
+        conn.end();
         return result[0] || null;
     }
     //all about a method update    
 
-    static async updateTitlle(ressources_id, titlle) {
-        const conn = await pool.getConnection();
-        const result = await conn.query('UPDATE ressources SET titlle = ? WHERE ressources_id = ?', [titlle, ressources_id]);
-        conn.release();
+    static async updateTitlle(ressources_id, tittle) {
+        const conn = await createConnection();
+        const result = await conn.query('UPDATE ressources SET titlle = ? WHERE ressources_id = ?', [tittle, ressources_id]);
+        conn.end();
         return result.affectedRows || null;
     }
     static async updateDescription(ressources_id, description) {
-        const conn = await pool.getConnection();
+        const conn = await createConnection();
         const result = await conn.query('UPDATE ressources SET description = ? WHERE ressources_id = ?', [description, ressources_id]);
-        conn.release();
+        conn.end();
         return result.affectedRows || null;
     }
-    // update all fields of a ressources object
-    static async updateRessouces(ressources_id, ressources) {
-        const conn = await pool.getConnection();
-        const result = await conn.query('UPDATE ressources SET ? WHERE ressources_id = ?', [ressources, ressources_id]);
-        conn.release();
+     // update all fields of a departement object
+     static async updateRessouces (ressources_id, ressources) {
+        const conn = await createConnection();
+        const [result] = await conn.query('UPDATE ressources SET ? WHERE ressources_id = ?', [ressources ,ressources_id]);
+        conn.end();
         return result.affectedRows || null;
     }
 
-    //all about a method delete
-    static async delete(ressources_id) {
-        const conn = await pool.getConnection();
-        const result = await conn.query('DELETE FROM ressources SET titllr=? WHERE ressources_id = ?', [ressources_id, titlle]);
-        conn.release();
+     static async delete(ressources_id) {
+        const conn = await createConnection();
+        const [result] = await conn.query('DELETE FROM ressources WHERE ressources_id = ?', [ressources_id]);
+        conn.end();
+        return result.affectedRows || null;
+     }
+  
+    // delete a ressources by their titlle
+    static async deleteByTitlle(tittle) {
+        const conn = await createConnection();
+        const [result] = await conn.query('DELETE FROM resources WHERE tittle = ?', [tittle]);
+        conn.end();
         return result.affectedRows || null;
     }
-    // delete a ressources by their titlle
-    static async deleteByTitlle(titlle) {
-        const conn = await pool.getConnection();
-        const result = await conn.query('DELETE FROM resources WHERE titlle = ?', [titlle]);
-        conn.release();
-        return result.affectedRows || null;
+    static async findAll() {
+        const conn = await createConnection();
+        const [result] = await conn.query('SELECT * FROM ressources');
+        conn.end();
+        return result || null;
     }
     
     // return the total number of users in the ressources table
     static async count() {
-        const conn = await pool.getConnection();
-        const result = await conn.query('SELECT COUNT(*) FROM ressources');
-        conn.release();
-        return result[0] || null;
-    }
+        const conn = await createConnection();
+        const [result] = await conn.query('SELECT COUNT(*) FROM ressources');
+        conn.end();
+        const count = result[0]['COUNT(*)'];
+    // Retour de la valeur ou null si elle n'existe pas
+    return count;
+ }
 }
+
 // Export the user model
 module.exports = ressource;
 

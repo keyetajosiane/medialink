@@ -2,8 +2,9 @@ const { createConnection } = require('../config/connection');
   // Define the user model class
 class departement {
     static async insert(departement) {
+        try{
         const conn = await createConnection();
-        await conn.query(
+        const [res] = await conn.query(
             `
       INSERT INTO departement  (nom_departement)
       VALUES (?)
@@ -11,7 +12,13 @@ class departement {
             [departement.nom_departement]
         );
         conn.end();
+            return res.insertId;
+        } catch (error) {
+            console.log(error);
+            return false;
+        }
     }
+
  // all about find :SELECTE
     static async findByDepartement_id(departement_id) {
         const conn = await createConnection();
@@ -19,9 +26,10 @@ class departement {
         conn.end();
         return result[0] || null;
     }
+
     static async findByNom_departement(nom_departement) {
         const conn = await createConnection();
-        const [result] = await conn.query('SELECT * FROM departement WHERE departement_id = ?', [nom_departement]);
+        const [result] = await conn.query('SELECT * FROM departement WHERE nom_departement = ?', [nom_departement]);
         conn.end();
         return result[0] || null;
     }
@@ -35,7 +43,7 @@ class departement {
      // update all fields of a departement object
      static async updateDepartement(departement_id, departement) {
         const conn = await createConnection();
-        const [result] = await conn.query('UPDATE departement SET ? WHERE id = ?', [departement, departement_id]);
+        const [result] = await conn.query('UPDATE departement SET ? WHERE departement_id = ?', [departement, departement_id]);
         conn.end();
         return result.affectedRows || null;
     }

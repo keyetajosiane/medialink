@@ -3,31 +3,29 @@ exports.getAll = async (req, res) => {
   const apprenand = await apprenant.findAll();
   res.json(apprenand);
 };
-exports.insert = (req, res) => {
+exports.insert = async (req, res) => {
     const create_data = req.body;
-    // check if the id is unique
-    let apprenand = apprenant. findById(create_data.id)
+       // check if the matricule is unique
+   let  apprenand = await apprenant. findByMatricule(create_data.matricule)
     if (apprenand) {
-        throw new Error("id already exist")
+        res.status(409).json({ message: "matricule already exist" });
+        return;
     }
-    // check if the name is unique
-    apprenand = apprenant. findByMatricule(create_data.matricule)
-    if (apprenand) {
-        throw new Error("matricule already exist")
-    }
-    const result =  apprenant.insert(create_data)
+    const result = await apprenant.insert(create_data)
     if (result === false) {
-        throw new Error("Unable to create this apprenant due to an internal server error")
+        res.status(500).json({ message: "Unable to create this  apprenant due to an internal server error" });
+        return;
     }
     // return the new user
-    const new_apprenant = apprenant.findById(result)
+    const new_apprenant =  await apprenant.findById(result)
     res.json(new_apprenant)
 }; 
+
 exports.getapprenantById = async (req, res) => {
   // Récupération de l'ID de l'apprenant
-  const {id} = req.params;
+  const {apprenant_id} = req.params;
   // Recherche de l'utilisateur par ID
-  const apprenand= await apprenant.findById(id);
+  const apprenand = await apprenant.findById(apprenant_id);
   // Envoi de la réponse au format JSON
   res.json(apprenand);
 };
@@ -40,33 +38,33 @@ exports.getapprenantById = async (req, res) => {
     // Envoi de la réponse au format JSON
     res.json(apprenand);
   };
-
+  
 exports.updateApprenant = async (req, res) => {
     // Récupération de l'ID du departement
-    const {id} = req.params;
+    const {apprenant_id} = req.params;
     // Récupération des données du formulaire
     const apprenant_update_data = req.body;
     // get the departement from the database
-    const apprenand = apprenant.findById(id)   // if the user does not exist, throw an error
+    const apprenand =  await apprenant.findById(apprenant_id)   // if the user does not exist, throw an error
     if (!apprenand) {
-        throw new Error("apprenant not found")
-    }
+        return res.status(404).json({ message: "appprenant not found." })
+    };
     for(const key of Object.keys(apprenant_update_data)){
         //TODO:: if the key is password, hash the password before saving it
         apprenand[key] = apprenant_update_data[key]
     }
     // Mise à jour du departement dans la base de données
-    const result = await apprenant.updateApprenant(id, apprenand);
-    if(result === null){
-        throw new Error("Update failed due to an internal server error")
+    const result = await apprenant.updateApprenant(apprenant_id, apprenand);
+    if(res === null){
+        return res.status(500).json({message: "Update failed due to an internal server error"})
     }
-    const updated_apprenant = apprenant.findById(id)
+    const updated_apprenant =  await apprenant.findById(apprenant_id)
 
     return res.json(updated_apprenant)
 };
 exports.updateMatricule = async (req, res) => {
-  const { id, matricule } = req.body; // Extraction des données de la requête
-    const apprenand = await apprenant.updateMatricule(id, matricule); // Appel de la méthode updateNom_departement de la classe Departement
+  const { apprenant_id, matricule } = req.body; // Extraction des données de la requête
+    const apprenand = await apprenant.updateMatricule(apprenant_id, matricule); // Appel de la méthode updateNom_departement de la classe Departement
     if(res === null){
         throw new Error("Update matricule failed due to an internal server error")
     }
@@ -74,16 +72,16 @@ exports.updateMatricule = async (req, res) => {
 }
 exports.delete= async (req, res) => {
     // Récupération de l'ID de la permission
-    const {id } = req.params;
+    const {apprenant_id} = req.params;
     //   get the user from the database
-    const apprenand = apprenant.findById(id)
+    const apprenand =  await apprenant.findById(apprenant_id)
     if (!apprenand) {
-        throw new Error("apprenant not found.")
+        return res.status(404).json({ message: "apprenant not found." })
     }
     // Suppression du departement de la base de données
-    const result = await apprenant.delete(id);
-    if (result === null) {
-        throw new Error("Delete failed due to an internal server error")
+    const result = await apprenant.delete(apprenant_id);
+    if (res === null) {
+        return res.status(500).json({message: "Delete failed due to an internal server error"})
     }
     return res.json({message: "apprenant deleted successfully"})
 };
@@ -92,34 +90,19 @@ exports.deleteByMatricule = async (req, res) => {
     // Récupération de l'ID du departement
     const {matricule} = req.params;
     //   get the user from the database
-    const apprenand = apprenant.findByMatricule(matricule) 
+    const apprenand = await apprenant.findByMatricule(matricule) 
     if (!apprenand) {
-        throw new Error("apprenant not found.")
+        return res.status(404).json({ message: "apprenant not found." })
     }
     // Suppression du departement de la base de données
     const result = await apprenant.deleteByMatricule(matricule);
-    if (result === null) {
-        throw new Error("Delete failed due to an internal server error")
+    if (res === null) {
+        return res.status(500).json({message: "Delete failed due to an internal server error"})
     }
     return res.json({message: "apprenant deleted successfully"})
 };
 
 
-exports.deleteById = async (req, res) => {
-    // Récupération de l'ID du departement
-    const {id} = req.params;
-    //   get the user from the database
-    const apprenand = apprenant.findById(id)
-    if (!apprenand) {
-        throw new Error("apprenant not found.")
-    }
-    // Suppression du departement de la base de données
-    const result = await apprenant.deleteById(id);
-    if (result === null) {
-        throw new Error("Delete failed due to an internal server error")
-    }
-    return res.json({message: "apprenant deleted successfully"})
-};
 exports.count = async (req, res) => {
     const capprenand = await apprenant.count();
     if (capprenand === null) {
@@ -127,10 +110,10 @@ exports.count = async (req, res) => {
       res.json(0);
     } else if (typeof capprenand !== 'number') {
       // lancer une erreur si le résultat n'est pas un nombre
-      throw new Error('Résultat invalide');
+      return res.status(500).json({ message: 'Résultat invalide' });
     } else {
       // renvoyer le résultat en JSON
-      res.json(apprenand);
+      res.json(capprenand);
     }
 };
 

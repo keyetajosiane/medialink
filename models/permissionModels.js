@@ -33,9 +33,6 @@ class permissions {
         conn.end();
         return result[0] || null;
     }
-    
-   
-
     //all about update=mettre a jour   
     static async updateNom(nom) {
         const conn = await createConnection();

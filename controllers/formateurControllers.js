@@ -3,10 +3,11 @@ exports.getAll = async (req, res) => {
   const formateurs = await formateur.findAll();
   res.json(formateurs);
 };
+
 exports.insert = (req, res) => {
     const create_data = req.body;
     // check if the id is unique
-    let formateurs = formateur.getformateurById(create_data.id)
+    let formateurs = formateur.findById(create_data.formateur_id)
     if (formateurs) {
         throw new Error("id already exist")
     }

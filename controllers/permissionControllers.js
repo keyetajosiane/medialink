@@ -5,31 +5,32 @@ exports.getAll = async (req, res) => {
 };
 
 exports.insert = async (req, res) => {
-    const create_data = req.body;
-    // check if the name is unique
-     let permissions = await permission.findByNom(create_data.nom)
-    if (!permissions) {
-        res.status(409).json({ message: "permissionnot found" });
-        return;
-    }
-    const result = await permission.insert(create_data)
-    if (result === false) {
-        res.status(500).json({ message: "Unable to create this permission due to an internal server error" });
-        return;
-    }
-    // return the new user
-    const new_permission = await permission.findByPermissions_id(result)
-    res.json(new_permission)
+  const create_data = req.body;
+  // check if the name is unique
+  let departemen =  await permission.findByNom(create_data.nom_departement)
+  if (departemen) {
+      res.status(409).json({ message: "permission allready exist" });
+      return;
+  }
+  const result =  await permission.insert(create_data)
+  if (result === false) {
+      res.status(500).json({ message: "Unable to create this permisssion due to an internal server error" });
+      return;
+  }
+  // return the new user
+  const new_departement =  await permission.findByPermissions_id(result)
+  res.json(new_departement)
+};
+ 
+exports.getpermissionById= async (req, res) => {
+  // Récupération de l'ID du departement
+  const { permissions_id } = req.params;
+  // Recherche de l'utilisateur par ID
+  const newpermission = await permission.findByPermissions_id(permissions_id);
+  // Envoi de la réponse au format JSON
+  res.json(newpermission);
 };
 
-exports.getpermissionById = async (req, res) => {
-  // Récupération de l'ID de la resssource
-  const { permissions_id } = req.query;
-  // Recherche de l'utilisateur par ID
-  const permissions = await permission.findByPermissions_id(permissions_id);
-  // Envoi de la réponse au format JSON
-  res.json(permissions);
-};
   exports.getpermissionByNom = async (req, res) => {
     // Récupération de l'ID de la ressource
     const { nom } = req.query;
@@ -41,7 +42,7 @@ exports.getpermissionById = async (req, res) => {
 
 exports.updatePermission = async (req, res) => {
     // Récupération de l'ID du departement
-    const {permissions_id} = req.query;
+    const {permissions_id} = req.params;
     // Récupération des données du formulaire
     const permission_update_data = req.body;
     // get the departement from the database
@@ -69,23 +70,24 @@ exports.updateNom = async (req, res) => {
         throw new Error("Update nom failed due to an internal server error")
     }
     return res.json(permissions)
-}
+};
 
 exports.delete = async (req, res) => {
-    // Récupération de l'ID de la permission
-    const {permissions_id } = req.query;
-    //   get the user from the database
-    const permissions = permission.findByPermissions_id(permissions_id)
-    if (!permissions) {
-        throw new Error("permissions not found.")
-    }
-    // Suppression du departement de la base de données
-    const result = await permission.delete(permissions_id);
-    if (res === null) {
-        return res.status(500).json({message: "Delete failed due to an internal server error"})
-    }
-    return res.json({message: "permission deleted successfully"})
+  // Récupération de l'ID du departement
+  const {permissions_id} = req.params;
+  //   get the user from the database
+  const perms = permission.findByPermissions_id(permissions_id)
+  if (!perms) {
+      throw new Error("permission found.")
+  }
+  // Suppression du departement de la base de données
+  const result = await permission.delete(permissions_id);
+  if (result === null) {
+      throw new Error("Delete failed due to an internal server error")
+  }
+  return res.json({message: "permissions deleted successfully"})
 };
+
 exports.deleteByNom = async (req, res) => {
     // Récupération de l'ID du departement
     const {nom} = req.query;

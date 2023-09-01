@@ -5,12 +5,12 @@ const router = express.Router();
 const ressourceControllers= require('../controllers/ressourceControllers');
 
 // Définition des routes et des actions du contrôleur
-router.get('/ressource', ressourceControllers.getAll); // Affiche la liste des utilisateurs
-router.get('/ressource/:ressources_id', ressourceControllers.getRessourceById); // Affiche les détails d'un utilisateur
-router.get('/ressource/:titlle', ressourceControllers.getRessourceByTitlle ); // Affiche les détails d'un utilisateur
-router.get('/ressource/:description', ressourceControllers.getRessourceByDescription ); 
 router.get('/ressource/', ressourceControllers.count); 
-router.post('/ressource', ressourceControllers.insert); // Enregistre un nouvel utilisateur dans la base de données
+router.get('/ressource/get', ressourceControllers.getAll); // Affiche la liste des utilisateurs
+router.get('/ressource/:titlle', ressourceControllers.getRessourceByTitlle ); // Affiche les détails d'une ressource
+router.get('/ressource/:ressources_id', ressourceControllers.getRessourceById); // Affiche les détails d'un utilisateur
+router.get('/ressource/:description', ressourceControllers.getRessourceByDescription ); 
+router.post('/ressource/insert', ressourceControllers.insert); // Enregistre un nouvel utilisateur dans la base de données
 router.put('/ressource/:ressources_id', ressourceControllers.updateRessource); // Met à jour un utilisateur dans la base de données
 router.put('/ressource/:titlle', ressourceControllers.updateTitlle );
 router.put('/ressource/:description', ressourceControllers.updateDescription);

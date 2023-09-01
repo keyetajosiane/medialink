@@ -3,12 +3,13 @@ exports.getAll = async (req, res) => {
   const departemen = await  departement.findAll();
   res.json(departemen);
 };
+
 exports.insert = async (req, res) => {
     const create_data = req.body;
     // check if the name is unique
     let departemen =  await departement.findByNom_departement(create_data.nom_departement)
     if (departemen) {
-        res.status(409).json({ message: "nom-departement already exist" });
+        res.status(409).json({ message: "nom-departement allready exist" });
         return;
     }
     const result =  await departement.insert(create_data)
@@ -17,7 +18,7 @@ exports.insert = async (req, res) => {
         return;
     }
     // return the new user
-    const new_departement = departement.findByDepartement_id(result)
+    const new_departement =  await departement.findByDepartement_id(result)
     res.json(new_departement)
 };
  
@@ -29,25 +30,27 @@ exports.getdepartementById = async (req, res) => {
   // Envoi de la réponse au format JSON
   res.json(departemen);
 };
+
 exports.getdepartementByNom = async (req, res) => {
     // Récupération de l'ID du departement
-    const {nom_departement} = req.params;
+    const {nom_departement} = req.query;
     // Recherche de l'utilisateur par ID
     const departemen = await departement.findByNom_departement(nom_departement);
     // Envoi de la réponse au format JSON
     res.json(departemen);
   };
+
 exports.update = async (req, res) => {
     // Récupération de l'ID du departement
     const {departement_id} = req.params;
     // Récupération des données du formulaire
     const departement_update_data = req.body;
     // get the departement from the database
-    const departemen = departement.findByDepartement_id(departement_id)
+    const departemen =  await departement.findByDepartement_id(departement_id)
     // if the user does not exist, throw an error
     if (!departemen) {
-        throw new Error("departement not found")
-    }
+        return res.status(404).json({ message: "departement not found." })
+    }    
     for(const key of Object.keys(departement_update_data)){
         //TODO:: if the key is password, hash the password before saving it
         departemen[key] = departement_update_data[key]
@@ -55,12 +58,14 @@ exports.update = async (req, res) => {
     // Mise à jour du departement dans la base de données
     const result = await departement.updateDepartement(departement_id, departemen);
     if(result === null){
-        throw new Error("Update failed due to an internal server error")
+        return res.status(500).json({message: "Update failed due to an internal server error"})
     }
-    const updated_departement = departement.findByDepartement_id(departement_id)
+    const updated_departement = await departement.findByDepartement_id(departement_id)
 
     return res.json(updated_departement)
 };
+
+
 
 exports.updateNomDepartement = async (req, res) => {
   const { departement_id, nom_departement } = req.body; // Extraction des données de la requête
@@ -74,12 +79,12 @@ exports.deleteById = async (req, res) => {
     // Récupération de l'ID du departement
     const { departement_id } = req.params;
     //   get the user from the database
-    const departemen = departement.findBydepartement_id(departement_id)
+    const departemen = departement. findByDepartement_id(departement_id)
     if (!departemen) {
         throw new Error("departement not found.")
     }
     // Suppression du departement de la base de données
-    const result = await departement.deleteById(departement_id);
+    const result = await departement.delete(departement_id);
     if (result === null) {
         throw new Error("Delete failed due to an internal server error")
     }
@@ -96,22 +101,24 @@ exports.deleteByNom = async (req, res) => {
     }
 
     // Suppression du departement de la base de données
-    const result = await departement.deleteByNom(nom_departement);
+    const result = await departement.deleteByNom_departement(nom_departement);
     if (result === null) {
         throw new Error("Delete failed due to an internal server error")
     }
     return res.json({message: "departement deleted successfully"})
 };
+
+  
 exports.count = async (req, res) => {
     const departemen = await departement.count();
     if (departemen === null) {
       // renvoyer 0 si le résultat est null
-      res.json(0);
+      return res.json(0);
     } else if (typeof departemen !== 'number') {
       // lancer une erreur si le résultat n'est pas un nombre
-      throw new Error('Résultat invalide');
+      return res.status(500).json({ message: 'Résultat invalide' });
     } else {
       // renvoyer le résultat en JSON
-      res.json(departemen);
+     return res.json(departemen);
     }
 }

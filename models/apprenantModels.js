@@ -1,97 +1,93 @@
-const mysql = require('mysql');
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'mediateque'
-  });
-
-connection.connect((err) => {
-  if (err) throw err;
-  console.log('Connected!');
-});
-  // Define the user model class
+const { createConnection } = require('../config/connection');
 class apprenant {
-
     static async insert(apprenant) {
-        const conn = await connection.getConnection();
-        await conn.query(
+        try{
+        const conn = await createConnection();
+         const [res]=  await conn.query(
             `
-      INSERT INTO departement  (matricule)
-      VALUES (?)
+      INSERT INTO apprenant (matricule, user_id, departement_id)
+      VALUES (?,?,?)
       `,
-            [apprenant.matricule]
+            [apprenant.matricule,apprenant.user_id,apprenant.departement_id]
         );
-        conn.release();
+        conn.end();
+          return res.insertId;
+       } catch (error) {
+          console.log(error);
+          return false;
+       }
     }
-
- // all about find :SELECTE
-    static async findById(id) {
-        const conn = await pool.getConnection();
-        const result = await conn.query('SELECT * FROM apprenant WHERE id = ?', [id]);
-        conn.release();
+     // all about find :SELECTE
+    
+    static async  findById(apprenant_id) {
+        const conn = await createConnection();
+        const [result] = await conn.query('SELECT * FROM apprenant WHERE apprenant_id = ?', [apprenant_id]);
+        conn.end();
         return result[0] || null;
     }
+
     static async findByMatricule(matricule) {
-        const conn = await pool.getConnection();
-        const result = await conn.query('SELECT * FROM apprenant WHERE id = ?', [matricule]);
-        conn.release();
+        const conn = await createConnection();
+        const [result] = await conn.query('SELECT * FROM apprenant WHERE matricule = ?', [matricule]);
+        conn.end();
         return result[0] || null;
     }
-
 
  //all about update=mettre a jour   
-    static async updateMatricule(matricule) {
-        const conn = await pool.getConnection();
-        const result = await conn.query('UPDATE apprenant SET matricule = ? WHERE id = ?', [matricule,id]);
-        conn.release();
+    static async updateMatricule(apprenant_id, matricule) {
+        const conn = await createConnection();
+        const [result] = await conn.query('UPDATE apprenant SET matricule = ? WHERE id = ?', [matricule,apprenant_id]);
+        conn.end();
         return result.affectedRows || null;
     }
-     // update all fields of a departement object
-     static async updateApprenant(id, apprenant) {
-        const conn = await pool.getConnection();
-        const result = await conn.query('UPDATE apprenant SET ? WHERE id = ?', [apprenant, id]);
-        conn.release();
-        return result.affectedRows || null;
-    }
+     // update user
+   static async  updateApprenant(appprenant, apprenant_id) {
+    const keys = Object.keys(appprenant);
+    let sub_str = keys.join('=?, ');
+    let update_query = `update apprenant set ${sub_str} where apprenant_id =?`;
+    const values = Object.values(appprenant);
+    values.push(apprenant_id);
+    const conn = await createConnection();
+    const [result] = await conn.query(update_query, values);
+    conn.end();
+    return result.affectedRows || null;
+ }
 
+   
 
  //all about DELETE 
-    static async delete(id) {//suprimer tt les departements
-        const conn = await pool.getConnection();
-        const result = await conn.query('DELETE FROM apprenant WHERE id = ?', [id]);
-        conn.release();
+    static async delete(apprenant_id) {//suprimer tt lesapprenants
+        const conn = await createConnection();
+        const [result] = await conn.query('DELETE FROM apprenant WHERE apprenant_id  = ?', [apprenant_id]);
+        conn.end();
         return result.affectedRows || null;
     }
     // delete a departement by their name
     static async deleteByMatricule(matricule) {
         const conn = await pool.getConnection();
         const result = await conn.query('DELETE FROM  apprenant WHERE matricule = ?', [matricule]);
-        conn.release();
+        conn.end();
         return result.affectedRows || null;
     }
-    //delete a departement by their id
-    static async deleteById(id) {
-        const conn = await pool.getConnection();
-        const result = await conn.query('DELETE FROM  apprenant WHERE id = ?', [id]);
-        conn.release();
-        return result.affectedRows || null;
-    }
+   
     // retrieve all departement from the users table
     static async findAll() {
-        const conn = await pool.getConnection();
-        const result = await conn.query('SELECT * FROM apprenant');
-        conn.release();
+        const conn = await createConnection();
+        const [result] = await conn.query('SELECT * FROM apprenant');
+        conn.end();
         return result || null;
     }   
 // return the total number of users in the users table
     static async count() {
-        const conn = await pool.getConnection();
-        const result = await conn.query('SELECT COUNT(*) FROM apprenant');
-        conn.release();
-        return result[0] || null;
+        const conn = await createConnection();
+        const [result] = await conn.query('SELECT COUNT(*) FROM apprenant');
+        conn.end();
+        const count = result[0]['COUNT(*)'];
+        // Retour de la valeur ou null si elle n'existe pas
+        return count;
+     }
     }
-}
+
 
 // Export the user model
 module.exports = apprenant;
