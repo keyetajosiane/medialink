@@ -17,13 +17,13 @@ exports.insert = async (req, res) => {
     }
     // return the new formateur
     const new_formateur =await formateur.findById(result)
-    re.json(new_formateur)
+    res.json(new_formateur)
 }; 
 exports.getformateurById = async (req, res) => {
   // Récupération de l'ID de l'apprenant
-  const {id} = req.params;
+  const {formateur_id} = req.params;
   // Recherche de l'utilisateur par ID
-  const formateurs = await formateur.findById(id);
+  const formateurs = await formateur.findById(formateur_id);
   // Envoi de la réponse au format JSON
   res.json(formateurs);
 };
@@ -36,27 +36,26 @@ exports.getformateurById = async (req, res) => {
     // Envoi de la réponse au format JSON
     res.json(formateurs);
   };
-
 exports.updateFormateur = async (req, res) => {
     // Récupération de l'ID du departement
-    const {id} = req.params;
+    const {formateur_id} = req.params;
     // Récupération des données du formulaire
     const formateur_update_data = req.body;
     // get the departement from the database
-    const formateurs = formateur.findById(id)   // if the user does not exist, throw an error
+    const formateurs = await formateur.findById(formateur_id)   // if the user does not exist, throw an error
     if (!formateurs) {
-        throw new Error("formateur not found")
+      return res.status(404).json({ message: "formateur not found." })
     }
     for(const key of Object.keys(formateur_update_data)){
         //TODO:: if the key is password, hash the password before saving it
         formateurs[key] = formateur_update_data[key]
     }
     // Mise à jour du departement dans la base de données
-    const result = await formateur.updateFormateur(id, formateurs);
+    const result = await formateur.updateFormateur(formateur_id, formateurs);
     if(result === null){
-        throw new Error("Update failed due to an internal server error")
+      return res.status(500).json({message: "Update failed due to an internal server error"})
     }
-    const updated_formateur = formateur.findById(id)
+    const updated_formateur = await formateur.findById(formateur_id)
 
     return res.json(updated_formateur)
 };
@@ -69,46 +68,33 @@ exports.updateMatiere_dispensee = async (req, res) => {
     }
     return res.json(formateurs)
 }
+
 exports.delete = async (req, res) => {
     // Récupération de l'ID du formateur
-    const {id } = req.params;
+    const {formateur_id } = req.params;
     //   get the formateur from the database
-    const formateurs = formateur.delete(id)
+    const formateurs = await formateur.findById(formateur_id)
     if (!formateurs) {
-        throw new Error("formateur not found.")
+      return res.status(404).json({ message: "formateur not found." })
     }
     // Suppression du formateur de la base de données
-    const result = await formateur.delete(id);
+    const result = await formateur.delete(formateur_id);
     if (result === null) {
-        throw new Error("Delete failed due to an internal server error")
+      return res.status(500).json({message: "Delete failed due to an internal server error"})
     }
     return res.json({message: "formateur deleted successfully"})
 };
-exports.deleteById = async (req, res) => {
-    // Récupération de l'ID du departement
-    const {id} = req.params;
-    //   get the user from the database
-    const formateurs = formateur.findById(id)
-    if (!formateurs) {
-        throw new Error(" formateur not found.")
-    } 
-    // Suppression du departement de la base de données
-    const result = await formateur.deleteById(id);
-    if (result === null) {
-        throw new Error("Delete failed due to an internal server error")
-    }
-    return res.json({message: "formateur deleted successfully"})
-};
+
 exports.count = async (req, res) => {
     const formateurs = await formateur.count();
     if (formateurs === null) {
       // renvoyer 0 si le résultat est null
-      res.json(0);
+       res.json(0);
     } else if (typeof formateurs !== 'number') {
       // lancer une erreur si le résultat n'est pas un nombre
-      throw new Error('Résultat invalide');
+      return res.status(500).json({ message: 'Résultat invalide' });
     } else {
       // renvoyer le résultat en JSON
-      res.json(formateurs);
+       res.json(formateurs);
     }
 }

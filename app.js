@@ -51,8 +51,8 @@ app.use('/ressources', ressourceRouter);
  app.use('/formateur', formateurRouter);
 
 
-// const administration_membersRouter = require('./routes/administration_membersRoutes');
-// app.use('/ressource', administration_membersRouter);
+const administration_membersRouter = require('./routes/administration_membersRoutes');
+ app.use('/administration_members', administration_membersRouter);
 
 
 // Define a catch-all route for 404 errors

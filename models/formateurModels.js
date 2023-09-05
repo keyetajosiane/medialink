@@ -8,10 +8,10 @@ class formateur{
         const conn = await createConnection();
        const [res]= await conn.query(
             `
-      INSERT INTO formateur  (formateur_id , matiere_dispensee, user_id, )
-      VALUES (?,?,?,)
+      INSERT INTO formateur  (formateur_id , matiere_dispensee, user_id)
+      VALUES (?,?,?)
       `,
-            [formateur.id, formateur.matiere_dispensee, formateur.user_id]
+            [formateur.formateur_id, formateur.matiere_dispensee, formateur.user_id]
         );
         conn.end();
         return res.insertId;
@@ -20,7 +20,6 @@ class formateur{
         return false;
      }
   }
-
  // all about find :SELECTE
     static async findById(formateur_id) {
         const conn = await createConnection();
@@ -37,31 +36,21 @@ class formateur{
  //all about update=mettre a jour   
     static async updateMatiere_dispensee(matiere_dispensee) {
         const conn = await createConnectiont ();
-        const [result] = await conn.query('UPDATE formateur SET matiere_dispensee = ? WHERE id = ?', [matiere_dispensee,id]);
+        const [result] = await conn.query('UPDATE formateur SET matiere_dispensee = ? WHERE id = ?', [matiere_dispensee]);
         conn.end();
         return result.affectedRows || null;
     }
      // update all fields of a formateur object
-     static async updateFormateur(id, formateur) {
+     static async updateFormateur(formateur_id, formateur) {
         const conn = await createConnection();
-        const [result] = await conn.query('UPDATE formateur SET ? WHERE id = ?', [formateur, id]);
+        const [result] = await conn.query('UPDATE formateur SET ? WHERE formateur_id = ?', [formateur, formateur_id]);
         conn.end();
         return result.affectedRows || null;
     }
-
-
  //all about DELETE 
-    static async delete(id) {//suprimer tt les departements
+    static async delete(formateur_id) {//suprimer tt les departements
         const conn = await createConnection();
-        const [result] = await conn.query('DELETE FROM formateur WHERE id = ?', [id]);
-        conn.end();
-        return result.affectedRows || null;
-    }
-    
-    //delete a departement by their id
-    static async deleteById(id) {
-        const conn = await createConnection();
-        const result = await conn.query('DELETE FROM formateur WHERE id = ?', [id]);
+        const [result] = await conn.query('DELETE FROM formateur WHERE formateur_id = ?', [formateur_id]);
         conn.end();
         return result.affectedRows || null;
     }
@@ -74,10 +63,11 @@ class formateur{
     }   
 // return the total number of users in the users table
     static async count() {
-        const conn = await pool.getConnection();
+        const conn = await createConnection();
         const [result] = await conn.query('SELECT COUNT(*) FROM formateur');
         conn.end();
-        return result[0] || null;
+        const count = result[0]['COUNT(*)'];
+        return count;
     }
 }
 

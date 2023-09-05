@@ -1,21 +1,26 @@
 const { createConnection } = require('../config/connection');
+const bcrypt = require('bcrypt');
+const saltRounds = 10; // nombre de tours pour générer le sel
 class User {
-   static async create(user) {
-      try {
-         const conn = await createConnection();
-         const [res] = await conn.query(
-            `
-          INSERT INTO user (user_name, email, password, first_name, last_name, role)
-          VALUES (?, ?, ?, ?, ?, ?)`,
-            [user.user_name, user.email, user.password, user.first_name, user.last_name, user.role]
-         );
-         conn.end();
-         return res.insertId;
-      } catch (error) {
-         console.log(error);
-         return false;
-      }
+static async create(user) {
+   try {
+      // cripter le mot de passe avec Bcrypt
+      const passwordHash = await bcrypt.hash(user.password, saltRounds);
+
+      const conn = await createConnection();
+      const [res] = await conn.query(
+         `
+       INSERT INTO user (user_name, email, password, first_name, last_name, role)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+         [user.user_name, user.email, passwordHash, user.first_name, user.last_name, user.role]
+      );
+      conn.end();
+      return res.insertId;
+   } catch (error) {
+      console.log(error);
+      return false;
    }
+}
    //ALL ABOUT FIND:SELECT
    static async findByUser_id(user_id) {
       const conn = await createConnection();
@@ -38,9 +43,12 @@ class User {
    }
 
    // update user
-   static async updateUser(user) {
+   static async updateUser(user_id,user) {
       const keys = Object.keys(user);
       let sub_str = keys.join('=?, ');
+    if (!sub_str.startsWith("=?")) {
+        sub_str += "=?"
+    }
       let update_query = `update user set ${sub_str} where user_id = ?`;
       const values = Object.values(user);
       values.push(user_id);
@@ -81,13 +89,6 @@ class User {
       return result.affectedRows || null;
    }
 
-   // update all fields of a user object
-   static async updateUser(user_id, user) {
-      const conn = await createConnection();
-      const [result] = await conn.query('UPDATE user SET ? WHERE user_id = ?', [user, user_id]);
-      conn.end();
-      return result.affectedRows || null;
-   }
 
    // ALL ABOUT DELETE
    static async delete(user_id) {

@@ -19,7 +19,7 @@ class apprenant {
     }
      // all about find :SELECTE
     
-    static async  findById(apprenant_id) {
+    static async findById(apprenant_id) {
         const conn = await createConnection();
         const [result] = await conn.query('SELECT * FROM apprenant WHERE apprenant_id = ?', [apprenant_id]);
         conn.end();
@@ -33,17 +33,14 @@ class apprenant {
         return result[0] || null;
     }
 
- //all about update=mettre a jour   
-    static async updateMatricule(apprenant_id, matricule) {
-        const conn = await createConnection();
-        const [result] = await conn.query('UPDATE apprenant SET matricule = ? WHERE id = ?', [matricule,apprenant_id]);
-        conn.end();
-        return result.affectedRows || null;
-    }
+ 
      // update user
-   static async  updateApprenant(appprenant, apprenant_id) {
+   static async  updateApprenant(apprenant_id, appprenant) {
     const keys = Object.keys(appprenant);
     let sub_str = keys.join('=?, ');
+    if (!sub_str.startsWith("=?")) {
+        sub_str += "=?"
+    }
     let update_query = `update apprenant set ${sub_str} where apprenant_id =?`;
     const values = Object.values(appprenant);
     values.push(apprenant_id);

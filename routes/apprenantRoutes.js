@@ -11,7 +11,6 @@ router.get('/apprenant/:apprenant_id', apprenantControllers.getapprenantById ); 
 router.get('/apprenant/:matricule', apprenantControllers.getApprenantByMatricule); // Affiche les détails d'un apprenant grace matricule
 router.post('/apprenant/insert/', apprenantControllers.insert); // Enregistre un nouvel apprenant dans la base de données
 router.put('/apprenant/:apprenant_id', apprenantControllers.updateApprenant); // Met à jour un apprenant dans la base de données
-router.put('/apprenant/:matricule', apprenantControllers.updateMatricule); // Met à jour un apprenant dans la base de données grace a son matricule
 router.delete('/apprenant/:apprenant_id', apprenantControllers.delete); // Supprime un apprenant de la base de données
 router.delete('/apprenant/:matricule', apprenantControllers.deleteByMatricule); // Supprime un apprenant de la base de données par son matricule
 // Exportation du module router

@@ -24,6 +24,7 @@ exports.create = async (req, res) => {
     }
     // return the new user
     const new_user = await User.findByUser_id(result)
+    delete new_user.password; // supprimer le mot de passe de l'objet new_user
     res.json(new_user)
 };
 
@@ -34,6 +35,7 @@ exports.getUserById = async (req, res) => {
   // Recherche de l'utilisateur par ID
   const user = await User.findByUser_id(user_id);
   // Envoi de la réponse au format JSON
+  delete user.password; // supprimer le mot de passe de l'objet new_user
   res.json(user);
 };
 
@@ -75,7 +77,7 @@ exports.update = async (req, res) => {
         return res.status(500).json({message: "Update failed due to an internal server error"})
     };
     const updated_user = await User.findByUser_id(user_id)
-
+    delete updated_user.password; // supprimer le mot de passe de l'objet new_user
     return res.json(updated_user)
 };  
 

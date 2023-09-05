@@ -13,7 +13,7 @@ console.log("Starting database initialization");
   });
 
 
-  var sql = "CREATE TABLE IF NOT EXISTS ressources(ressources_id INT PRIMARY KEY AUTO_INCREMENT,tittle varchar(255), ressource_name text, description text, user_id int, foreign key (user_id) references user(user_id))";
+  var sql = "CREATE TABLE IF NOT EXISTS ressources(ressources_id INT PRIMARY KEY AUTO_INCREMENT,tittle varchar(255), url VARCHAR(255), description text, user_id int NOT NULL , foreign key (user_id) references user(user_id))";
    connection.query(sql, function (err, result) {
       if (err) throw err;
      console.log("Table ressources créée");
@@ -29,8 +29,8 @@ console.log("Starting database initialization");
    var sql=`CREATE TABLE IF NOT EXISTS apprenant(
     apprenant_id int auto_increment primary key,
     matricule varchar(255) not null unique,
-    user_id INT NOT NULL , 
-    departement_id INT NOT NULL ,
+    user_id INT NOT NULL UNIQUE, 
+    departement_id INT NOT NULL UNIQUE,
     foreign key (user_id) references user(user_id),
     foreign key (departement_id) references departement(departement_id)
 );
@@ -61,7 +61,7 @@ connection.query(sql, function (err, result) {
 
 var sql=`CREATE TABLE IF NOT EXISTS  administrations_members (
   id INT PRIMARY KEY AUTO_INCREMENT,
- user_id INT NOT NULL,
+ user_id INT NOT NULL UNIQUE,
  poste VARCHAR(255),
   FOREIGN KEY (user_id) REFERENCES user(user_id)
   
@@ -74,7 +74,7 @@ connection.query(sql, function (err, result) {
 var sql=`CREATE TABLE IF NOT EXISTS formateur (
   formateur_id INT PRIMARY KEY AUTO_INCREMENT,
  matiere_dispensee VARCHAR(255),
- user_id INT NOT NULL,
+ user_id INT NOT NULL UNIQUE,
   FOREIGN KEY (user_id) REFERENCES user(user_id)
   
 )`

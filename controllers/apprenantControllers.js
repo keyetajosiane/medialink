@@ -55,7 +55,7 @@ exports.updateApprenant = async (req, res) => {
     }
     // Mise à jour du departement dans la base de données
     const result = await apprenant.updateApprenant(apprenant_id, apprenand);
-    if(res === null){
+    if(result === null){
         return res.status(500).json({message: "Update failed due to an internal server error"})
     }
     const updated_apprenant =  await apprenant.findById(apprenant_id)

@@ -3,24 +3,56 @@ exports.getAll = async (req, res) => {
   const allressource = await ressource.findAll();
   res.json(allressource);
 };
+const fs = require('fs');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
+
 exports.insert = async (req, res) => {
   const create_data = req.body;
-  // check if the name is unique
-  let departemen =  await ressource.findByTitlle(create_data.tittle)
+  console.log(create_data);
+  // Vérifier si le titre est unique
+  let departemen = await ressource.findByTitlle(create_data.tittle);
   if (departemen) {
-      res.status(409).json({ message: "tittle allready exist" });
-      return;
+    // Renvoyer un code 409 et sortir de la fonction
+    return res.status(409).json({ message: "Title already exists" });
   }
-  const result =  await ressource.insert(create_data)
-  if (result === false) {
-      res.status(500).json({ message: "Unable to create this  ressource due to an internal server error" });
-      return;
-  }
-  // return the new user
-  const new_departement =  await ressource.findByRessources_id(result)
-  res.json(new_departement)
-};
 
+  // Vérifier s'il y a des fichiers téléchargés
+  if (!req.files || req.files.length === 0) {
+    // Renvoyer un code 400 et sortir de la fonction
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  // Déplacer les fichiers téléchargés vers le dossier "opload"
+  const uploadedFiles = req.files;
+  const fileURLs = [];
+
+  for (const file of uploadedFiles) {
+    const uniqueFilename = uuidv4(); // Générer un nom de fichier unique
+    const filePath = path.join(__dirname, '../opload', uniqueFilename); // Chemin du fichier dans le dossier "opload"
+
+    // Déplacer le fichier téléchargé vers le dossier "opload"
+    fs.renameSync(file.path, filePath);
+
+    // Enregistrer l'URL du fichier dans le tableau
+    const fileURL = `/opload/${uniqueFilename}`;
+    fileURLs.push(fileURL);
+  }
+
+  // Enregistrer l'URL de la ressource dans votre base de données
+  const result = await ressource.insert(req, res, { ...create_data, files: fileURLs });
+
+  if (!result) {
+    // Renvoyer un code 500 et sortir de la fonction
+    return res.status(500).json({ message: "Unable to create this resource due to an internal server error" });
+  }
+
+  // Récupérer la nouvelle ressource
+  const new_departement = await ressource.findByRessources_id(result);
+
+  // Renvoyer un code 201 et la ressource créée
+  res.json(new_departement);
+};
 
 exports.getRessourceById = async (req, res) => {
   // Récupération de l'ID de la resssource

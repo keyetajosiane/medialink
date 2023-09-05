@@ -3,21 +3,24 @@ exports.getAll = async (req, res) => {
   const administration_member  = await administration_members.findAll();
   res.json(administration_member);
 };
-exports.insert = (req, res) => {
+exports.insert = async (req, res) => {
     const create_data = req.body;
     // check if the id is unique
-    let administration_member = administration_members.getadministration_membersById(create_data.id)
+    let administration_member = await administration_members.findById(create_data.id)
     if (administration_member) {
-        throw new Error("id already exist")
+        res.status(409).json({ message: "id of administration_members already exist" });
+        return;
     }
-    const result = administration_members.insert(create_data)
+    const result = await administration_members.insert(create_data)
     if (result === false) {
-        throw new Error("Unable to create this administration_members  due to an internal server error")
+        res.status(500).json({ message: "Unable to create this administration_members due to an internal server error" });
+        return; 
     }
     // return the new formateur
-    const new_administration_members = administration_members.findById(result)
+    const new_administration_members =  await administration_members.findById(result)
     res.json(new_administration_members)
 }; 
+  
 exports.getadministration_membersById = async (req, res) => {
   // Récupération de l'ID de l'apprenant
   const {id} = req.params;
@@ -35,27 +38,26 @@ exports.getadministration_membersById = async (req, res) => {
     // Envoi de la réponse au format JSON
     res.json(administration_member);
   };
-
 exports.updateAdministration_members = async (req, res) => {
     // Récupération de l'ID du departement
     const {id} = req.params;
     // Récupération des données du formulaire
     const administration_update_data = req.body;
     // get the departement from the database
-    const administration_member = administration_members.findById(id)   // if the user does not exist, throw an error
+    const administration_member = await administration_members.findById(id)   // if the user does not exist, throw an error
     if (!administration_member) {
-        throw new Error("administration_members not found")
+        return res.status(404).json({ message: "administration_members not found." })
     }
     for(const key of Object.keys(administration_update_data)){
-        //TODO:: if the key is password, hash the password before saving it
-        administration_member[key] = administration_update_data[key]
+      //TODO:: if the key is password, hash the password before saving it
+      administration_member[key] = administration_update_data[key]
     }
     // Mise à jour du departement dans la base de données
     const result = await administration_members.updateAdministration_members(id,administration_member);
     if(result === null){
-        throw new Error("Update failed due to an internal server error")
+        return res.status(500).json({message: "Update failed due to an internal server error"})
     }
-    const updated_administration_members = administration_members.findById(id)
+    const updated_administration_members = await administration_members.findById(id)
 
     return res.json(updated_administration_members)
 };
@@ -69,34 +71,20 @@ exports.updatePoste = async (req, res) => {
     return res.json(Administration_member)
 }
 
+
+
 exports.delete = async (req, res) => {
     // Récupération de l'ID du formateur
     const {id } = req.params;
     //   get the formateur from the database
-    const Administration_member = administration_members.findById(id)
+    const Administration_member =  await administration_members.findById(id)
     if (!Administration_member) {
-        throw new Error("Administration_members not found.")
+        return res.status(404).json({ message: "administration_members not found." })
     }
     // Suppression du formateur de la base de données
     const result = await administration_members.delete(id);
     if (result === null) {
-        throw new Error("Delete failed due to an internal server error")
-    }
-    return res.json({message: "Administration_members deleted successfully"})
-};
-
-exports.deleteById = async (req, res) => {
-    // Récupération de l'ID du departement
-    const {id} = req.params;
-    //   get the user from the database
-    const Administration_member = administration_members.findById(id)
-    if (!Administration_member) {
-        throw new Error("Administration_members not found.")
-    } 
-    // Suppression du departement de la base de données
-    const result = await administration_members.deleteById(id);
-    if (result === null) {
-        throw new Error("Delete failed due to an internal server error")
+        return res.status(500).json({message: "Delete failed due to an internal server error"})
     }
     return res.json({message: "Administration_members deleted successfully"})
 };
@@ -104,7 +92,7 @@ exports.deleteByPoste = async (req, res) => {
     // Récupération de l'ID du departement
     const {poste} = req.params;
     //   get the user from the database
-    const Administration_member = administration_members.findByPoste(poste) 
+    const Administration_member = await administration_members.findByPoste(poste) 
     if (!Administration_member) {
         throw new Error("Administration_members not found.")
     } 
@@ -122,7 +110,7 @@ exports.count = async (req, res) => {
       res.json(0);
     } else if (typeof administration !== 'number') {
       // lancer une erreur si le résultat n'est pas un nombre
-      throw new Error('Résultat invalide');
+      return res.status(500).json({ message: 'Résultat invalide' });
     } else {
       // renvoyer le résultat en JSON
       res.json(administration);

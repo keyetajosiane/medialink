@@ -1,22 +1,44 @@
 const { createConnection } = require('../config/connection');
+// importer les modules fs et path
+const fs = require('fs');
+const path = require('path');
+// définir le chemin du dossier où stocker les fichiers
+const folderPath = './opload';
+// définir la classe ressource
 class ressource {
-    //insert ressouces
-    static async insert(ressources) {
-        try{
-        const conn = await createConnection();
-         const [res] = await conn.query(
-            `
-      INSERT INTO ressources (ressouce_name,tittle,description)
-      VALUES (?, ?, ?)
-      `,
-            [ressources.ressouces_name, ressources.tittle, ressources.description]
-        );
-        conn.end();
-        return res.insertId;
-     } catch (error) {
-        console.log(error);
-        return false;
-     }
+
+  // insert a new ressource in the database
+  static async insert(req, res, create_data) {
+    try {
+      // récupérer le fichier envoyé par le client
+      const file = req.file;
+      if (!file) {
+        // renvoyer null
+        return null;
+      }
+      // construire le chemin du fichier à partir du nom du fichier et du chemin du dossier
+      const filePath = path.join(folderPath, file.originalname);
+      // écrire le fichier dans le dossier upload
+      fs.writeFileSync(filePath, file.buffer);
+      // construire l'url de la ressource à partir du nom du fichier et du chemin du dossier
+      const url = folderPath + '/' + file.originalname;
+      // créer un objet ressources avec les données du formulaire et l'url
+      const ressources = { ...req.body, url };
+      // enregistrer la ressource dans la base de données
+      const conn = await createConnection();
+      const [result] = await conn.query(
+        `
+        INSERT INTO ressources (url, tittle, description,user_id)
+        VALUES (?, ?, ?)
+        `,
+        [ressources.url, ressources.tittle, ressources.description, ressources.user_id]
+      );
+      conn.end();
+      return result.insertId;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
   }
     //all about a method find
     static async findByTitlle(tittle) {
@@ -27,11 +49,11 @@ class ressource {
     }
     static async findByRessources_id(ressources_id) {
         const conn = await createConnection();
-        const [result] = await conn.query('SELECT * FROM ressources WHERE  	ressources_id = ?', [ressources_id]);
+        const [result] = await conn.query('SELECT * FROM ressources WHERE  	ressources_id = ?', [ressources_id.toString()]);
         conn.end();
         return result[0] || null;
-    }
-    
+      }
+      
     static async findByDescription(description) {
         const conn = await createConnection();
         const [result] = await conn.query('SELECT * FROM  ressources WHERE  description = ?', [description]);
