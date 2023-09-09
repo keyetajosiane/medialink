@@ -13,7 +13,7 @@ const storage = multer.diskStorage({
     cb(null, file.originalname);
   }
 });
-const upload = multer({ dest: 'opload' })
+const upload = multer({ dest: 'upload' })
 
 
 const ressourceControllers = require('../controllers/ressourceControllers');

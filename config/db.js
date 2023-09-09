@@ -13,7 +13,7 @@ console.log("Starting database initialization");
   });
 
 
-  var sql = "CREATE TABLE IF NOT EXISTS ressources(ressources_id INT PRIMARY KEY AUTO_INCREMENT,tittle varchar(255), url VARCHAR(255), description text, user_id int NOT NULL , foreign key (user_id) references user(user_id))";
+  var sql = "CREATE TABLE IF NOT EXISTS ressources(ressources_id INT PRIMARY KEY AUTO_INCREMENT,title varchar(255), url text, description text, user_id int NOT NULL , foreign key (user_id) references user(user_id))";
    connection.query(sql, function (err, result) {
       if (err) throw err;
      console.log("Table ressources créée");

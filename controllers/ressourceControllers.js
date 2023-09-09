@@ -1,59 +1,64 @@
 const ressource = require('../models/ressourceModels');
-exports.getAll = async (req, res) => {
-  const allressource = await ressource.findAll();
-  res.json(allressource);
-};
 const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
+const uploadFolderPath = path.join(__dirname, '..', 'upload');
+
+exports.getAll = async (req, res) => {
+  const allressource = await ressource.findAll();
+  // modify the resource url to return the absolute path based on the server host
+  allressource.forEach((ressource) => {
+    ressource.url = `${req.protocol}://${req.get('host')}${ressource.url}`
+  })
+  res.json(allressource);
+};
 
 exports.insert = async (req, res) => {
-  const create_data = req.body;
-  console.log(create_data);
-  // Vérifier si le titre est unique
-  let departemen = await ressource.findByTitlle(create_data.tittle);
-  if (departemen) {
-    // Renvoyer un code 409 et sortir de la fonction
+  const resourceData = req.body;
+  console.log(resourceData);
+  // Check if title is unique
+  let existingResource = await ressource.findByTitlle(resourceData.title);
+  if (existingResource) {
+    // Return a 409 code and exit the function
     return res.status(409).json({ message: "Title already exists" });
   }
 
-  // Vérifier s'il y a des fichiers téléchargés
-  if (!req.files || req.files.length === 0) {
-    // Renvoyer un code 400 et sortir de la fonction
+  // Check if there is an uploaded file
+  if (!req.files) {
+    // Return a 400 code and exit the function
     return res.status(400).json({ message: "No file uploaded" });
   }
 
-  // Déplacer les fichiers téléchargés vers le dossier "opload"
-  const uploadedFiles = req.files;
-  const fileURLs = [];
+  try {
+    // Move uploaded file to "upload" folder
+    const uploadedFile = req.files[0];
+    const uniqueFilename = `${uuidv4()}-${uploadedFile.originalname}`; // Generate a unique filename that includes the original file name
+    const filePath = path.join(__dirname, '..', 'upload', uniqueFilename); // File path in "upload" folder
 
-  for (const file of uploadedFiles) {
-    const uniqueFilename = uuidv4(); // Générer un nom de fichier unique
-    const filePath = path.join(__dirname, '../opload', uniqueFilename); // Chemin du fichier dans le dossier "opload"
+    // Move uploaded file to "upload" folder
+    fs.renameSync(uploadedFile.path, filePath);
 
-    // Déplacer le fichier téléchargé vers le dossier "opload"
-    fs.renameSync(file.path, filePath);
+    // Save file URL in array
+    const fileURL = path.join('/upload', uniqueFilename);
 
-    // Enregistrer l'URL du fichier dans le tableau
-    const fileURL = `/opload/${uniqueFilename}`;
-    fileURLs.push(fileURL);
+    // Save resource URL in your database
+    const insertResult = await ressource.insert({ ...resourceData, url: fileURL });
+
+    if (!insertResult) {
+      // Return a 500 code and exit the function
+      return res.status(500).json({ message: "Unable to create this resource due to an internal server error" });
+    }
+
+    // Get new resource
+    const newResource = await ressource.findByRessources_id(insertResult);
+
+    // Return a 201 code and created resource
+    res.json(newResource);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "An error occurred while processing your request." });
   }
-
-  // Enregistrer l'URL de la ressource dans votre base de données
-  const result = await ressource.insert(req, res, { ...create_data, files: fileURLs });
-
-  if (!result) {
-    // Renvoyer un code 500 et sortir de la fonction
-    return res.status(500).json({ message: "Unable to create this resource due to an internal server error" });
-  }
-
-  // Récupérer la nouvelle ressource
-  const new_departement = await ressource.findByRessources_id(result);
-
-  // Renvoyer un code 201 et la ressource créée
-  res.json(new_departement);
 };
-
 exports.getRessourceById = async (req, res) => {
   // Récupération de l'ID de la resssource
   const { ressources_id } = req.params;
@@ -62,6 +67,14 @@ exports.getRessourceById = async (req, res) => {
   }
   // Recherche de l'utilisateur par ID
   const fressource = await ressource.findByRessources_id(ressources_id);
+  // if resource not found
+  if (!fressource) {
+      return res.status(404).json({message: "ressource not found"})
+  }
+
+  // modify the resource url to return the absolute path based on the server host
+  fressource.url = `${req.protocol}://${req.get('host')}${fressource.url}`
+
   // Envoi de la réponse au format JSON
   return res.json(fressource);
 };
@@ -87,8 +100,6 @@ exports.getRessourceByTitlle = async (req, res) => {
     // Envoi de la réponse au format JSON
     return res.json(dressource);
   };
-
-
 
 exports.updateRessource = async (req, res) => {
     // Récupération de l'ID du departement

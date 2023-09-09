@@ -1,14 +1,23 @@
 const express = require('express');
-// Create the Express app
+const cors = require('cors');
 
 // load environment variables
 require("dotenv").config()
 
+// Create the Express app
 const app = express();
+
+// Enable CORS
+app.use(cors());
+
+
+
 // Use the JSON middleware to parse the request body
 app.use(express.json());
 // Import the routers
 
+// server static files from the "upload" directory
+app.use('/upload', express.static('upload'));
 
 const userRouter = require('./routes/userRoutes');
 // const profileRouter = require('./routes/profile');
