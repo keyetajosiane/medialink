@@ -1,67 +1,35 @@
 const { createConnection } = require('../config/connection');
-
-
-
-
 const bcrypt = require('bcrypt');
-
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-const UserSchema = new Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  password: {
-    type: String,
-    required: true
-  }
-});
-
-
-UserSchema.pre(
-   'save',
-   async function(next) {
-     const user = this;
-     const hash = await bcrypt.hash(this.password, 10); // nombre de tours pour générer le sel
- 
-     this.password = hash;
-     next();
+class User {
+   static async create(user) {
+      try {
+         // Hasher le mot de passe ici
+         const hash = await bcrypt.hash(user.password, 10);
+         user.password = hash;
+   
+         const conn = await createConnection();
+         const [res] = await conn.query(
+            `
+          INSERT INTO user (user_name, email, password, first_name, last_name, role)
+          VALUES (?, ?, ?, ?, ?, ?)`,
+            [user.user_name, user.email, hash, user.first_name, user.last_name, user.role]
+            
+         );
+         conn.end();
+         return res.insertId;
+      } catch (error) {
+         console.log(error);
+         return false;
+      }
    }
- );
- 
- UserSchema.methods.isValidPassword = async function(password) {
-   const user = this;
-   const compare = await bcrypt.compare(password, user.password);
- 
-   return compare;
+   
+// Méthode pour vérifier si le mot de passe est valide 
+async isValidPassword(password) { 
+   const compare = await bcrypt.compare(password, this.password); return compare;
  }
 
 
 
-
-
-class User {
-static async create(user) {
-   try {
-      // cripter le mot de passe avec Bcrypt
-      const passwordHash = await bcrypt.hash(user.password, saltRounds);
-
-      const conn = await createConnection();
-      const [res] = await conn.query(
-         `
-       INSERT INTO user (user_name, email, password, first_name, last_name, role)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-         [user.user_name, user.email, passwordHash, user.first_name, user.last_name, user.role]
-      );
-      conn.end();
-      return res.insertId;
-   } catch (error) {
-      console.log(error);
-      return false;
-   }
-}
    //ALL ABOUT FIND:SELECT
    static async findByUser_id(user_id) {
       const conn = await createConnection();
@@ -166,8 +134,6 @@ static async create(user) {
    }
 }
 // Export the user model
-
-const User = mongoose.model('user', UserSchema);
 
 
 module.exports = User;

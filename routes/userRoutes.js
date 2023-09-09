@@ -2,12 +2,12 @@ const express = require('express');
 const passport = require('passport');
 const jwt = require('jsonwebtoken')
 // Création d'un objet router
+
 const router = express.Router();
 // Importation du module userController
 
 
-router.post(
-  '/signup',
+router.post('signup',
   passport.authenticate('signup', { session: false }),
   async (req, res, next) => {
     res.json({
@@ -18,8 +18,7 @@ router.post(
 );
 
 
-router.post(
-  '/login',
+router.post('login',
   async (req, res, next) => {
     passport.authenticate(
       'login',
@@ -60,7 +59,7 @@ router.get('/user/email', userController.getUserByEmail); // Affiche l'utilisate
 router.get('/user/count', userController.count); // Compte le nombre d'utilisateurs
 router.get('/user/search', userController.getUserByuser_nameOrEmail); // Affiche l'utilisateur correspondant au nom ou à l'email
 router.get('/user/:user_id', userController.getUserById); // Affiche les détails d'un utilisateur
-router.post('/user/create/', userController.create); // Enregistre un nouvel utilisateur dans la base de données
+router.post('/user/create/', passport.authenticate('jwt', { session: false }), userController.create); // Enregistre un nouvel utilisateur dans la base de données
 router.put('/user/:user_id', userController.update); // Met à jour un utilisateur dans la base de données
 router.delete('/user/:user_id', userController.delete); // Supprime un utilisateur de la base de données
 
