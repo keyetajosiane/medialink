@@ -17,16 +17,38 @@ exports.create = async (req, res) => {
         res.status(409).json({ message: "user_name already exist" });
         return;
     }
-    const result = await User.create(create_data)
-    if (result === false) {
+    // get the permissions from the request body
+    const permissions = create_data.permissions;
+    // delete the permissions field from the create_data object
+    delete create_data.permissions;
+    // insert the user in the users table
+    const user_id = await User.create(create_data)
+    if (user_id === false) {
         res.status(500).json({ message: "Unable to create this user due to an internal server error" });
         return;
     }
-    // return the new user
-    const new_user = await User.findByUser_id(result)
+    // insert the associations between the user and the permissions in the user_permissions table
+    for (let permissions of permissions) {
+        // get the permission id from the permissions table
+        const permissions_id = await Permissions.findByNom(permissions);
+        if (permissions_id === false) {
+            res.status(500).json({ message: "Unable to find this permission due to an internal server error" });
+            return;
+        }
+        // insert the association in the user_permissions table
+        const result = await User_Permissions.create(user_id, permissions_id);
+        if (result === false) {
+            res.status(500).json({ message: "Unable to create this association due to an internal server error" });
+            return;
+        }
+    }
+    // return the new user with his permissions
+    const new_user = await User.findByUser_id(user_id)
     delete new_user.password; // supprimer le mot de passe de l'objet new_user
+    new_user.permissions = permissions; // ajouter le champ permissions à l'objet new_user
     res.json(new_user)
 };
+
 
 
 exports.getUserById = async (req, res) => {

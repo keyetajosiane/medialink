@@ -1,6 +1,6 @@
 const passport = require('passport');
 const bodyParser = require('body-parser');
-require('./auth/auth');
+// require('./auth/auth');
 // Plug in the JWT strategy as a middleware so only verified users can access this route.
 const express = require('express');
 const cors = require('cors');
