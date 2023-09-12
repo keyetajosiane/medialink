@@ -20,12 +20,12 @@ exports.create = async (req, res) => {
         res.status(409).json({ message: "user_name already exist" });
         return;
     }
+    // insert the user in the users table
+    const user_id = await User.create(create_data)
     if (user_id === false) {
         res.status(500).json({ message: "Unable to create this user due to an internal server error" });
         return;
     }
-    // insert the user in the users table
-    const user_id = await User.create(create_data)
     // get the permissions from the request body
     const permissions = create_data.permissions;
     if(permissions){
@@ -113,7 +113,7 @@ exports.delete = async (req, res) => {
     if (!user) {
         return res.status(404).json({ message: "User not found." })
     }
-    
+
     // delete the user permissions
     await User_Permissions.deleteByUserId(user_id)
 
