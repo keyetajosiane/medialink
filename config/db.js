@@ -44,7 +44,7 @@ console.log("Starting database initialization");
   
 
 
-   var sql = "CREATE TABLE IF NOT EXISTS permissions (permissions_id INT PRIMARY KEY AUTO_INCREMENT, nom varchar(255))";
+   var sql = "CREATE TABLE IF NOT EXISTS permissions (permissions_id INT PRIMARY KEY AUTO_INCREMENT, nom varchar(255) unique)";
    connection.query(sql, function (err, result) {
     if (err) throw err;
     console.log("Table permission créée");
