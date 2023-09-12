@@ -4,6 +4,7 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import VueBasicAlert from 'vue-basic-alert'
 import { initFlowbite } from 'flowbite'
+import PermissionsVue from '../components/user/Permissions.vue'
 
 const alert = ref(null)
 
@@ -15,10 +16,16 @@ const username = ref('')
 const email = ref('')
 const password = ref('')
 const repeatPassword = ref('')
+const selectedPermissions = ref([])
 
 onMounted(() => {
     initFlowbite()
 })
+
+const getSelectedPermissions = (permissions) => {
+    selectedPermissions.value = permissions
+    console.log(selectedPermissions.value);
+}
 
 const register = async () => {
     // email, username, password and repeatPassword are required
@@ -41,6 +48,7 @@ const register = async () => {
         email: email.value,
         password: password.value,
         roles: 'ROLE_USER',
+        permissions: selectedPermissions.value
     }
 
     // register the user
@@ -114,6 +122,11 @@ const register = async () => {
                             <label class="mb-2.5 block font-medium text-black dark:text-white">Re-type Password</label>
                             <input type="password" placeholder="Enter your password" v-model="repeatPassword"
                                 :class="[repeatPasswordError ? 'border-red-500' : '', 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500']" />
+                        </div>
+
+                        <!-- Permissions -->
+                        <div class="col-span-2">
+                            <PermissionsVue :getSelectedPermissions="getSelectedPermissions" />
                         </div>
 
                         <div>
