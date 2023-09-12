@@ -2,9 +2,11 @@ const mysql = require('mysql');
 const {connection} = require("./connection");
 console.log("Starting database initialization");
   connection.connect((err) => {
+    
     if (err) throw err;
     console.log('Connected!');
   });
+
   var sql = "CREATE TABLE IF NOT EXISTS  user(user_id INT PRIMARY KEY AUTO_INCREMENT,  user_name varchar(255), first_name varchar(255), last_name varchar(255), email varchar(255) unique , password varchar(255), is_admin BOOLEAN, role varchar(255))";
     connection.query(sql, function (err, result) {
     if (err) throw err;

@@ -3,11 +3,17 @@ const bcrypt = require('bcrypt');
 class User {
    static async create(user) {
       try {
+         const { password } = user;
+    
+         if (!password) {
+           throw new Error('Mot de passe non valide');
+         }
          // Hasher le mot de passe ici
          const hash = await bcrypt.hash(user.password, 10);
          user.password = hash;
-   
+
          const conn = await createConnection();
+         
          const [res] = await conn.query(
             `
           INSERT INTO user (user_name, email, password, first_name, last_name, role)
@@ -15,6 +21,7 @@ class User {
             [user.user_name, user.email, hash, user.first_name, user.last_name, user.role]
             
          );
+         console.log(user.password);
          conn.end();
          return res.insertId;
       } catch (error) {

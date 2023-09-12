@@ -45,7 +45,7 @@ exports.create = async (req, res) => {
     // return the new user with his permissions
     const new_user = await User.findByUser_id(user_id)
     delete new_user.password; // supprimer le mot de passe de l'objet new_user
-    new_user.permissions = permissions; // ajouter le champ permissions à l'objet new_user
+    new_user.permissions = permissions;  // ajouter le champ permissions à l'objet new_user
     res.json(new_user)
 };
 
