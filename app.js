@@ -15,7 +15,8 @@ const app = express();
 // Enable CORS
 app.use(cors());
 
-
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // Use the JSON middleware to parse the request body
 app.use(express.json());
