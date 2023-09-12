@@ -1,4 +1,7 @@
 const User = require('../models/userModels');
+const Permissions = require('../models/permissionModels');
+const User_Permissions = require('../models/userPermissionsModel');
+
 exports.getAll = async (req, res) => {
   const users = await User.findAll();
   res.json(users);
@@ -17,35 +20,34 @@ exports.create = async (req, res) => {
         res.status(409).json({ message: "user_name already exist" });
         return;
     }
-    // get the permissions from the request body
-    const permissions = create_data.permissions;
-    // delete the permissions field from the create_data object
-    delete create_data.permissions;
-    // insert the user in the users table
-    const user_id = await User.create(create_data)
     if (user_id === false) {
         res.status(500).json({ message: "Unable to create this user due to an internal server error" });
         return;
     }
-    // insert the associations between the user and the permissions in the user_permissions table
-    for (let permissions of permissions) {
-        // get the permission id from the permissions table
-        const permissions_id = await Permissions.findByNom(permissions);
-        if (permissions_id === false) {
-            res.status(500).json({ message: "Unable to find this permission due to an internal server error" });
-            return;
-        }
-        // insert the association in the user_permissions table
-        const result = await User_Permissions.create(user_id, permissions_id);
-        if (result === false) {
-            res.status(500).json({ message: "Unable to create this association due to an internal server error" });
-            return;
+    // insert the user in the users table
+    const user_id = await User.create(create_data)
+    // get the permissions from the request body
+    const permissions = create_data.permissions;
+    if(permissions){
+        // insert the associations between the user and the permissions in the user_permissions table
+        for (let permission_id of permissions) {
+            // get the permission id from the permissions table
+            const existing_permission = await Permissions.findByPermissions_id(permission_id);
+            if (existing_permission === null) {
+                continue
+            }
+            // insert the association in the user_permissions table
+            const result = await User_Permissions.insert({user_id, permission_id});
+            if (result === false) {
+                console.log("An internal server error occured when associating the user to his permissions");
+                continue
+            }
         }
     }
     // return the new user with his permissions
     const new_user = await User.findByUser_id(user_id)
     delete new_user.password; // supprimer le mot de passe de l'objet new_user
-    new_user.permissions = permissions;  // ajouter le champ permissions à l'objet new_user
+    new_user.permissions = await User_Permissions.findUserPermissionsIds(user_id);  // ajouter le champ permissions à l'objet new_user
     res.json(new_user)
 };
 
@@ -111,6 +113,10 @@ exports.delete = async (req, res) => {
     if (!user) {
         return res.status(404).json({ message: "User not found." })
     }
+    
+    // delete the user permissions
+    await User_Permissions.deleteByUserId(user_id)
+
     // Suppression de l'utilisateur de la base de données
     const result = await User.delete(user_id);
     if (res === null) {
