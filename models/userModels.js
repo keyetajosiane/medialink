@@ -62,9 +62,9 @@ async isValidPassword(password) {
    static async updateUser(user_id,user) {
       const keys = Object.keys(user);
       let sub_str = keys.join('=?, ');
-    if (!sub_str.startsWith("=?")) {
-        sub_str += "=?"
-    }
+      if (!sub_str.startsWith("=?")) {
+         sub_str += "=?"
+      }
       let update_query = `update user set ${sub_str} where user_id = ?`;
       const values = Object.values(user);
       values.push(user_id);

@@ -1,3 +1,4 @@
+const { validate } = require('uuid');
 const { createConnection } = require('../config/connection');
 // Define the user model class
 class permissions {
@@ -26,24 +27,25 @@ class permissions {
         conn.end();
         return result[0] || null;
     }
-    
+
     static async findByNom(nom) {
         const conn = await createConnection();
         const [result] = await conn.query('SELECT * FROM permissions WHERE nom = ?', [nom]);
         conn.end();
         return result[0] || null;
     }
-    //all about update=mettre a jour   
-    static async updateNom(nom) {
-        const conn = await createConnection();
-        const [result] = await conn.query('UPDATE permissions SET nom = ?  WHERE permissions_id = ?', [nom, permissions_id]);
-        conn.end();
-        return result.affectedRows || null;
-    }
     // update all fields of a departement object
-    static async updatePermission(permissions_id, permissions) {
+    static async updatePermission(permissions_id, permission) {
+        const keys = Object.keys(permission)
+        let sub_str = keys.join('=?, ');
+        if (!sub_str.startsWith("=?")) {
+            sub_str += "=?"
+        }
+        let update_query = `update permissions set ${sub_str} where permissions_id = ?`
+        const values = Object.values(permission)
+        values.push(permissions_id)
         const conn = await createConnection();
-        const [result] = await conn.query('UPDATE permissions SET ? WHERE permissions_id = ?', [permissions, permissions_id]);
+        const [result] = await conn.query(update_query, values);
         conn.end();
         return result.affectedRows || null;
     }
