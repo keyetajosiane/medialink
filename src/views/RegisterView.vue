@@ -44,7 +44,7 @@ const register = async () => {
     const user = {
         first_name: firstname.value,
         last_name: lastname.value,
-        username: username.value,
+        user_name: username.value,
         email: email.value,
         password: password.value,
         roles: 'ROLE_USER',

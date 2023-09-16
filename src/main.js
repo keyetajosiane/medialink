@@ -12,6 +12,16 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 
+// set an axios interceptor that adds the token to the Authorization header
+axios.interceptors.request.use((config) => {
+    // get the token from local storage
+    const token = localStorage.getItem('token')
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+})
+
 axios.defaults.baseURL = 'http://localhost:3000/'
 
 app.mount('#app')
