@@ -23,6 +23,9 @@ exports.login = async (req, res) => {
     const token = jwt.sign({ id: user.email }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
     // remove password
     user.password = undefined;
+    // populate user permissions
+    const permissions = await User_Permissions.userPermissionsDetails(user.user_id);
+    user.permissions = permissions
     res.status(200).json({ token, user });
 }
 

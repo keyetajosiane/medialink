@@ -1,20 +1,20 @@
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
-exports.authenticateToken = (req, res, next) => {
+exports.authenticateToken = async (req, res, next) => {
     const authHeader = req.headers['authorization'];
     // check if auth header exists
     if (authHeader) {
         const token = authHeader.split(' ')[1];
-        jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-            if (err) {
-                return res.sendStatus(401).send("Access Denied: Invalid or Expired Token");
-            }
-            req.user = user;
+        try {
+            const user = await jwt.verify(token, process.env.JWT_SECRET);
+            req.user = user.id;
             next();
-        });
+        } catch (err) {
+            return res.status(401).json({ message: "Access Denied: Invalid or Expired Token" });
+        }
     }
     else {
-        res.sendStatus(401);
+        return res.status(401).json({ message: "Access Denied: No Token Provided" });
     }
 }

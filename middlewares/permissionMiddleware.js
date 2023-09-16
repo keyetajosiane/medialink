@@ -1,10 +1,10 @@
 const {resourcePermissions} = require('../utils/permissions')
 const authController = require('../controllers/authController');
 
-exports.resourceReadPermission = (req, res, next) => {
-    const {user} = req;
+exports.resourceReadPermission = async (req, res, next) => {
+    let {user} = req;
     if(!user) return res.sendStatus(401);
-    user = authController.getCurrentUser(user);
+    user = await authController.getCurrentUser(user);
     if(!user) return res.sendStatus(401);
     if(!user.permissions.length) return res.sendStatus(401);
     const permissions = user.permissions.map(item => item.nom);
@@ -12,10 +12,10 @@ exports.resourceReadPermission = (req, res, next) => {
     next();
 }
 
-exports.resourceCreatePermission = (req, res, next) => {
-    const {user} = req;
+exports.resourceCreatePermission = async (req, res, next) => {
+    let {user} = req;
     if(!user) return res.sendStatus(401);
-    user = authController.getCurrentUser(user);
+    user = await authController.getCurrentUser(user);
     if(!user) return res.sendStatus(401);
     if(!user.permissions.length) return res.sendStatus(401);
     const permissions = user.permissions.map(item => item.nom);
@@ -23,10 +23,10 @@ exports.resourceCreatePermission = (req, res, next) => {
     next();
 }
 
-exports.resourceDeletePermission = (req, res, next) => {
-    const {user} = req;
+exports.resourceDeletePermission = async (req, res, next) => {
+    let {user} = req;
     if(!user) return res.sendStatus(401);
-    user = authController.getCurrentUser(user);
+    user = await authController.getCurrentUser(user);
     if(!user) return res.sendStatus(401);
     if(!user.permissions.length) return res.sendStatus(401);
     const permissions = user.permissions.map(item => item.nom);

@@ -1,4 +1,5 @@
 const ressource = require('../models/ressourceModels');
+const authController = require('../controllers/authController');
 const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
@@ -15,7 +16,11 @@ exports.getAll = async (req, res) => {
 
 exports.insert = async (req, res) => {
   const resourceData = req.body;
-  console.log(resourceData);
+  // get current user
+  const user_uid = req.user;
+  const user = await authController.getCurrentUser(user_uid);
+  if(!user) return res.sendStatus(401);
+  resourceData.user_id = user.user_id;
   // Check if title is unique
   let existingResource = await ressource.findByTitlle(resourceData.title);
   if (existingResource) {
