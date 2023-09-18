@@ -6,10 +6,15 @@ const permissions = [
     "resource_create",
     "resource_delete",
     "ressource_update",
-    "ressource_delete",
+    "user_get",
     "user_create",
     "user_update",
-    "user_delete"
+    "user_delete",
+    "user_update",
+    "departement_get",
+    "departement_create",
+    "departement_delete",
+    "departement_update"
 
 ]
 

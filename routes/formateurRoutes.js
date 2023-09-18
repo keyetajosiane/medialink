@@ -1,18 +1,21 @@
 const express = require('express');
-// Création d'un objet router
-const router = express.Router();
-// Importation du module userController
-const formateurControllers = require('../controllers/formateurControllers');
+const router = express.Router();// Création d'un objet router
+
+const formateurControllers = require('../controllers/formateurControllers');// Importation du module userController
 const departement_formateurControllers= require('../controllers/departement_formateurControllers');
+const authMiddleware = require('../middlewares/authMiddleware');// pour le medleware
+const permissionMiddleware = require('../middlewares/permissionMiddleware');// pour les permissions concernant le user
+
+
+
 // Définition des routes et des actions du contrôleur
 router.get('/formateur', formateurControllers.count); 
-router.get('/formateur/get', formateurControllers.getAll); // Affiche la liste des formateurs
-router.get('/formateur/:formateur_id', formateurControllers.getformateurById ); // Affiche les détails d'un formateur grace a son id
-router.get('/formateur/:matiere_dispensee', formateurControllers.getformateurBymatiere_dispensee); // Affiche les détails d'un formateur grace matricule
-router.post('/formateur/create', formateurControllers.create);
-router.put('/formateur/:formateur_id', formateurControllers.updateFormateur); // Met à jour un apprenant dans la base de données
+router.get('/formateur/get', authMiddleware.authenticateToken, permissionMiddleware.userGetPermission,formateurControllers.getAll); // Affiche la liste des formateurs
+router.get('/formateur/:formateur_id', authMiddleware.authenticateToken, permissionMiddleware.userGetPermission, formateurControllers.getformateurById ); // Affiche les détails d'un formateur grace a son id
+router.post('/formateur/create', authMiddleware.authenticateToken, permissionMiddleware.userCreatePermission, formateurControllers.create);
+router.put('/formateur/:formateur_id', authMiddleware.authenticateToken, permissionMiddleware.userUpdatePermission, formateurControllers.updateFormateur); // Met à jour un apprenant dans la base de données
 router.put('/formateur/departemnt/:formateur_id', departement_formateurControllers.updateDepartement_formateur); 
-router.delete('/formateur/:formateur_id', formateurControllers.delete); // Supprime un apprenant de la base de données
+router.delete('/formateur/:formateur_id', authMiddleware.authenticateToken, permissionMiddleware.userDeletePermission, formateurControllers.delete); // Supprime un apprenant de la base de données
 
 
 // Exportation du module router

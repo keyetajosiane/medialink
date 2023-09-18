@@ -3,34 +3,6 @@ const Permissions = require('../models/permissionModels');
 const User_Permissions = require('../models/userPermissionsModel');
 const passport = require('passport');
 
-exports.signup = async (req, res, next) => {
-  passport.authenticate('signup', { session: false }, (err, user) => {
-    if (err) {
-      return res.status(500).json({ message: err.message });
-    }
-    return res.json({ message: 'Signup successful', user: user });
-  })(req, res, next);
-};
-
-exports.login = async (req, res, next) => {
-  passport.authenticate('login', { session: false }, (err, user, info) => {
-    if (err) {
-      return res.status(500).json({ message: err.message });
-    }
-    if (!user) {
-      return res.status(401).json({ message: info.message });
-    }
-    req.login(user, { session: false }, async (err) => {
-      if (err) {
-        return res.status(500).json({ message: err.message });
-      }
-      // Generate and return JWT token
-            const token = jwt.sign({ userId: user.id }, 'JWT_SECRET_KEY', { expiresIn: 'exp' });
-    });
-  })(req, res, next);
-};
-
-
 exports.getAll = async (req, res) => {
   const users = await User.findAll();
   res.json(users);
@@ -136,7 +108,7 @@ exports.update = async (req, res) => {
 
 exports.delete = async (req, res) => {
     // Récupération de l'ID de l'utilisateur
-    const { user_id } = req.params;
+    const { user_id } = req.params;  
     //   get the user from the database
     const user = await User.findByUser_id(user_id)
     if (!user) {
