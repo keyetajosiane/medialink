@@ -32,7 +32,7 @@ console.log("Starting database initialization");
     apprenant_id int auto_increment primary key,
     matricule varchar(255) not null unique,
     user_id INT NOT NULL UNIQUE, 
-    departement_id INT NOT NULL UNIQUE,
+    departement_id INT NOT NULL ,
     foreign key (user_id) references user(user_id),
     foreign key (departement_id) references departement(departement_id)
 );

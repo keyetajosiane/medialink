@@ -1,5 +1,35 @@
 const User = require('../models/userModels');
+const Permissions = require('../models/permissionModels');
 const User_Permissions = require('../models/userPermissionsModel');
+const passport = require('passport');
+
+exports.signup = async (req, res, next) => {
+  passport.authenticate('signup', { session: false }, (err, user) => {
+    if (err) {
+      return res.status(500).json({ message: err.message });
+    }
+    return res.json({ message: 'Signup successful', user: user });
+  })(req, res, next);
+};
+
+exports.login = async (req, res, next) => {
+  passport.authenticate('login', { session: false }, (err, user, info) => {
+    if (err) {
+      return res.status(500).json({ message: err.message });
+    }
+    if (!user) {
+      return res.status(401).json({ message: info.message });
+    }
+    req.login(user, { session: false }, async (err) => {
+      if (err) {
+        return res.status(500).json({ message: err.message });
+      }
+      // Generate and return JWT token
+            const token = jwt.sign({ userId: user.id }, 'JWT_SECRET_KEY', { expiresIn: 'exp' });
+    });
+  })(req, res, next);
+};
+
 
 exports.getAll = async (req, res) => {
   const users = await User.findAll();
@@ -29,14 +59,14 @@ exports.create = async (req, res) => {
     const permissions = create_data.permissions;
     if(permissions){
         // insert the associations between the user and the permissions in the user_permissions table
-        for (let permission_id of permissions) {
+        for (let permissions_id of permissions) {
             // get the permission id from the permissions table
-            const existing_permission = await Permissions.findByPermissions_id(permission_id);
+            const existing_permission = await Permissions.findByPermissions_id(permissions_id);
             if (existing_permission === null) {
                 continue
             }
             // insert the association in the user_permissions table
-            const result = await User_Permissions.insert({user_id, permission_id});
+            const result = await User_Permissions.insert({user_id, permissions_id});
             if (result === false) {
                 console.log("An internal server error occured when associating the user to his permissions");
                 continue

@@ -1,4 +1,5 @@
 const apprenant = require('../models/apprenantModels');
+const departement = require('../models/departementModels');
 exports.getAll = async (req, res) => {
   const apprenand = await apprenant.findAll();
   res.json(apprenand);
@@ -16,11 +17,23 @@ exports.insert = async (req, res) => {
         res.status(500).json({ message: "Unable to create this  apprenant due to an internal server error" });
         return;
     }
+    const departemen = create_data.departemen;
+    if(departemen){
+        // insert the associations between the apprenant and the departement in the user_permissions table
+        for (let departement_id of departemen) {
+            // get the permission id from the permissions table
+            const existing_departement = await departement.findByDepartement_id(departement_id);
+            if (existing_departement === null) {
+                continue
+            }
+            
     // return the new user
     const new_apprenant =  await apprenant.findById(result)
+    new_apprenant.departement = departemen; // ajouter le champ permissions à l'objet new_user
     res.json(new_apprenant)
 }; 
-
+    }
+  };
 exports.getapprenantById = async (req, res) => {
   // Récupération de l'ID de l'apprenant
   const {apprenant_id} = req.params;

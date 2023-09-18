@@ -1,31 +1,22 @@
-const passport = require('passport');
+const passport =  require('passport');
 const bodyParser = require('body-parser');
-// require('./auth/auth');
-// Plug in the JWT strategy as a middleware so only verified users can access this route.
 const express = require('express');
 const cors = require('cors');
+require("dotenv").config()// load environment variables
+const app = express();// Create the Express app
 
 
-// load environment variables
-require("dotenv").config()
 
-// Create the Express app
-const app = express();
+app.use(passport.initialize());// Initialize passport middleware
+app.use(cors());// Enable CORS'permet de gerer les donnees
+app.use(bodyParser.urlencoded({ extended: false }));// parse application/x-www-form-urlencoded
+app.use(express.json());// Use the JSON middleware to parse the request body
 
-// Enable CORS
-app.use(cors());
 
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
 
-// Use the JSON middleware to parse the request body
-app.use(express.json());
-// Import the routers
-const profile = require('./profil/profilRoute');
+const profile = require('./profil/profilRoute');// Import the routers
 app.use('/profile', passport.authenticate('jwt', { session: false }), profile);
-
-// server static files from the "upload" directory
-app.use('/upload', express.static('upload'));
+app.use('/upload', express.static('upload'));// server static files from the "upload" directory
 
 const userRouter = require('./routes/userRoutes');
 // const profileRouter = require('./routes/profile');
@@ -61,12 +52,12 @@ app.use('/ressources', ressourceRouter);
 const administration_membersRouter = require('./routes/administration_membersRoutes');
  app.use('/administration_members', administration_membersRouter);
 
+
+
 // Define a catch-all route for 404 errors
 app.use((req, res, next) => {
   res.status(404).json({ message: 'Not found' });
 });
-
-
 // Define an error-handling middleware for 500 errors
 app.use((err, req, res, next) => {
   console.error(err);

@@ -1,24 +1,65 @@
 const formateur = require('../models/formateurModels');
+const departement = require('../models/departementModels');
+const departement_formateur = require('../models/departement_formateurModels');
+
+
 exports.getAll = async (req, res) => {
   const formateurs = await formateur.findAll();
   res.json(formateurs);
 };
 
-exports.insert = async (req, res) => {
-    const create_data = req.body;
-    // check if the id is unique
-    let formateurs =await formateur.findById(create_data.formateur_id)
-    if (formateurs) {
-        throw new Error("id already exist")
-    }
-    const result = await formateur.insert(create_data)
-    if (result === false) {
-        throw new Error("Unable to create this formateur due to an internal server error")
-    }
-    // return the new formateur
-    const new_formateur =await formateur.findById(result)
-    res.json(new_formateur)
-}; 
+exports.create = async (req, res) => {
+  const create_data = req.body;
+  // check if the id is unique
+  let formateurs = await formateur.findById(create_data.formateur_id)
+  if (formateurs) {
+      res.status(409).json({ message: "id already exist" });
+      return;
+  }
+  // insert the user in the users table
+  const formateur_id = await formateur.insert(create_data)
+  if (formateur_id === false) {
+      res.status(500).json({ message: "Unable to create this formateur due to an internal server error" });
+      return;
+  }
+  // get the permissions from the request body
+  const departements = create_data.departements;
+  if(departements){
+      // insert the associations between the user and the permissions in the user_permissions table
+      for (let departement_id of departements) {
+          // get the permission id from the permissions table
+          const existing_departement = await departement.findByDepartement_id(departement_id);
+          if (existing_departement === null) {
+              continue
+          }
+          // insert the association in the user_permissions table
+          const result = await departement_formateur.insert({formateur_id , departement_id});
+          if (result === false) {
+              console.log("An internal server error occured when associating the formateur to his departement");
+              continue
+          }
+      }
+  }
+  // return the new user with his permissions
+  const new_form = await formateur.findById(formateur_id)
+  new_form.departement = departements; // ajouter le champ departement à l'objet new_form
+  res.json(new_form)
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 exports.getformateurById = async (req, res) => {
   // Récupération de l'ID de l'apprenant
   const {formateur_id} = req.params;

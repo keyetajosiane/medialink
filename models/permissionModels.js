@@ -21,9 +21,9 @@ class permissions {
     }
 
     // all about find :SELECTE
-    static async findByPermissions_id(permissions_id) {
+    static async findByPermissions_id(permissions_id ) {
         const conn = await createConnection();
-        const [result] = await conn.query('SELECT * FROM permissions WHERE permissions_id = ?', [permissions_id]);
+        const [result] = await conn.query('SELECT * FROM permissions WHERE permissions_id = ?', [permissions_id ]);
         conn.end();
         return result[0] || null;
     }

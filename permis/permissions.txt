@@ -1,4 +1,0 @@
-lecture
-écriture
-modification
-suppression

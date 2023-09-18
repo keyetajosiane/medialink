@@ -9,7 +9,7 @@ class UserPermissionsModel {
                 INSERT INTO user_permissions (user_id, permissions_id)
                 VALUES (?, ?)
                 `,
-                [user_permission_data.user_id, user_permission_data.permission_id]
+                [user_permission_data.user_id, user_permission_data.permissions_id]
             );
             conn.end();
             return res.insertId;

@@ -5,6 +5,12 @@ const permissions = [
     "resource_read",
     "resource_create",
     "resource_delete",
+    "ressource_update",
+    "ressource_delete",
+    "user_create",
+    "user_update",
+    "user_delete"
+
 ]
 
 const seedPermissions = async () => {

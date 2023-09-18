@@ -14,6 +14,10 @@ exports.getAll = async (req, res) => {
   res.json(allressource);
 };
 
+// Vérifier si l'utilisateur a la permission "ressource_create"
+if (!req.user.permissions.includes('ressource_create')) {
+  return res.status(403).json({ message: 'You do not have permission to create this resource' });
+}
 exports.insert = async (req, res) => {
   const resourceData = req.body;
   // get current user
