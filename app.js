@@ -1,7 +1,11 @@
+
+
+
+// Middleware pour activer 
+const cors = require('cors');
 const passport =  require('passport');
 const bodyParser = require('body-parser');
 const express = require('express');
-const cors = require('cors');
 require("dotenv").config()// load environment variables
 const app = express();// Create the Express app
 
