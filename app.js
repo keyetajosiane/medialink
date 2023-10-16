@@ -7,9 +7,11 @@ const passport =  require('passport');
 const bodyParser = require('body-parser');
 const express = require('express');
 require("dotenv").config()// load environment variables
+const helmet = require('helmet');
+
 const app = express();// Create the Express app
 
-
+app.use(helmet());// Use the helmet middleware
 
 app.use(passport.initialize());// Initialize passport middleware
 app.use(cors());// Enable CORS'permet de gerer les donnees
@@ -58,15 +60,21 @@ const administration_membersRouter = require('./routes/administration_membersRou
 
 
 
-// Define a catch-all route for 404 errors
-app.use((req, res, next) => {
-  res.status(404).json({ message: 'Not found' });
-});
-// Define an error-handling middleware for 500 errors
+// This middleware function is used to handle errors in the application.
 app.use((err, req, res, next) => {
+  // Log the error to the console.
   console.error(err);
-  res.status(500).json({ message: 'Internal server error' });
+
+  // Check if the error is an instance of SyntaxError.
+  if (err instanceof SyntaxError) {
+    // If it is, set the response status to 400 (Bad Request) and send a JSON response with the message 'Bad Request'.
+    res.status(400).json({ message: 'Bad Request' });
+  } else {
+    // If it's not a SyntaxError, set the response status to 500 (Internal Server Error) and send a JSON response with the message 'Internal server error'.
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
+
 // Start the server and listen for incoming requests
 const port = process.env.PORT || 5000;
 console.log(process.env.PORT);
