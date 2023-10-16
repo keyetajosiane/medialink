@@ -25,29 +25,21 @@ app.use('/profile', passport.authenticate('jwt', { session: false }), profile);
 app.use('/upload', express.static('upload'));// server static files from the "upload" directory
 
 const userRouter = require('./routes/userRoutes');
-// const profileRouter = require('./routes/profile');
 // Use the routers for the corresponding routes
 app.use('/user', userRouter);
-// app.use('/profile', profileRouter);
 
 const permissionRouter = require('./routes/permissionRoutes');
-// const profileRouter = require('./routes/profile');
 // Use the routers for the corresponding routes
 app.use('/permissions', permissionRouter);
-// app.use('/profile', profileRouter);
 
 const departementRouter = require('./routes/departementRoutes');
-// const profileRouter = require('./routes/profile');
 // Use the routers for the corresponding routes
 app.use('/departement', departementRouter);
-// app.use('/profile', profileRouter);
 
 
 const ressourceRouter = require('./routes/ressourceRoutes');
-// const profileRouter = require('./routes/profile');
 // Use the routers for the corresponding routes
 app.use('/ressources', ressourceRouter);
-// app.use('/profile', profileRouter);
 
  const apprenantRouter = require('./routes/apprenantRoutes');
  app.use('/apprenant', apprenantRouter );
