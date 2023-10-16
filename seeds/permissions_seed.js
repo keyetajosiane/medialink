@@ -10,7 +10,6 @@ const permissions = [
     "user_create",
     "user_update",
     "user_delete",
-    "user_update",
     "departement_get",
     "departement_create",
     "departement_delete",
