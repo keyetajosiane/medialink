@@ -30,6 +30,11 @@ const router = createRouter({
       path: '/guess',
       name: 'guess',
       component: () => import('../components/layouts/GuestLayout.vue')
+    },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: () => import('../components/layouts/AuthLayout.vue')
     }
   ]
 })
