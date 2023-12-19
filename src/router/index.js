@@ -25,6 +25,11 @@ const router = createRouter({
       path: '/resources',
       name: 'resources',
       component: ResourcesView
+    },
+    {
+      path: '/guess',
+      name: 'guess',
+      component: () => import('../components/layouts/GuestLayout.vue')
     }
   ]
 })
