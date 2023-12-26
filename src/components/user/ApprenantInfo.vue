@@ -31,6 +31,11 @@ const apprenantInfo = reactive({
 const departements = [
   // { value: 'departement_id', text: 'Departement Name' },
   // Populate this array with departement options
+  { value: '1', text: 'TIC' },
+  { value: '2', text: 'RSE' },
+  { value: '3', text: 'RH' },
+  { value: '4', text: 'Gestion' },
+  { value: '5', text: 'Finance' }
 ];
 
 defineExpose({ apprenantInfo: toRefs(apprenantInfo) });
