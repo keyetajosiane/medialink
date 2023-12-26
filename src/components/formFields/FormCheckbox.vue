@@ -45,7 +45,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['change']);
 
 const isOn = ref(props.modelValue);
 
@@ -55,7 +55,7 @@ watchEffect(() => {
 
 const handleToggle = () => {
   isOn.value = !isOn.value;
-  emit('update:modelValue', isOn.value);
+  emit('change', isOn.value);
 };
 </script>
 <style scoped>
