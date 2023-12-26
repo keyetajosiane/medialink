@@ -48,6 +48,10 @@ const userPermissions = ref([1,12]);
 
 const accept_extensions="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation";
 
+const file = ref(null);
+const username = ref(null);
+const role = ref('apprenant');
+
 const handleUserPermissionsChange = (newPermissions) => {
   userPermissions.value = newPermissions;
   console.log(userPermissions.value);
@@ -57,15 +61,19 @@ const handleFileChange = (e) => {
   file.value = e.target.files[0]
 }
 
+const handleInputChange = (e) => {
+  console.log(role.value);
+}
+
 </script>
 
 <template>
   <main class="bg-discord-gray p-8 min-h-screen flex flex-col items-center justify-center text-white">
     <h1 class="text-3xl font-bold mb-6">Welcome to CIS Mediatheque</h1>
     <div class="flex flex-col justify-between items-center w-full">
-      <FormInput label="Username" inputId="username" type="text" />
+      <FormInput label="Username" inputId="username" type="text" v-model="username" />
       <FormCheckbox class="mt-4" label="Remember me" checkboxId="rememberMe" />
-      <FormSelect class="mt-4" label="Role" :options="userRoles" selectId="apprenant" modelValue="apprenant" />
+      <FormSelect class="mt-4" label="Role" :options="userRoles" selectId="apprenant" modelValue="apprenant" v-model="role" />
       <FormButton class="mt-4 w-full">Login</FormButton>
       <FormFileUpload class="mt-4" label="Upload file" fileInputId="file" @change="handleFileChange" :accept="accept_extensions" />
       <PermissionsManager :permissionsData="permissionsData" :groupNames="groupNames" :userPermissions="userPermissions" @update="handleUserPermissionsChange" />

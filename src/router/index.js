@@ -35,6 +35,11 @@ const router = createRouter({
       path: '/admin',
       name: 'admin',
       component: () => import('../components/layouts/AuthLayout.vue')
+    },
+    {
+      path: '/accounts',
+      name: 'accounts',
+      component: () => import('../components/user/UserCreationForm.vue')
     }
   ]
 })

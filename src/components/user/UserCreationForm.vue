@@ -1,23 +1,34 @@
 <template>
-    <form @submit.prevent="onSubmit">
-        <!-- Other form fields here -->
-        <slot name="extra-fields" :selectedPermissions="selectedPermissions" />
+    <div class="min-h-screen bg-gray-700 flex justify-center items-center">
+        <form @submit.prevent="handleSubmit" class="bg-gray-800 p-8 rounded-lg space-y-4 w-full max-w-md">
+            <!-- Base Account Info -->
+            <BaseAccountInfo v-slot="{ accountInfo }"> 
+                <!-- Conditionally rendered components based on selected role -->
+                <FormateurInfo v-if="accountInfo.role === 'formateur'" />
+                <ApprenantInfo v-if="accountInfo.role === 'apprenant'" />
+                <AdministratifInfo v-if="accountInfo.role === 'membre administratif'" />
+            </BaseAccountInfo>
 
-        <!-- Update the button to use FormButton -->
-        <FormButton type="submit" color="green">Create Account</FormButton>
-    </form>
+
+            <!-- Submit Button -->
+            <FormButton class="mt-4 w-full" type="submit">
+                Create Account
+            </FormButton>
+        </form>
+    </div>
 </template>
-  
+
 <script setup>
 import { ref } from 'vue';
+import BaseAccountInfo from './BaseAccountInfo.vue';
+import FormateurInfo from './FormateurInfo.vue';
+import ApprenantInfo from './ApprenantInfo.vue';
+import AdministratifInfo from './AdministratifInfo.vue';
 import FormButton from '../formFields/FormButton.vue';
 
-const selectedPermissions = ref([]);
-
-const onSubmit = () => {
-    // Logic to handle form submission
-    // This should include handling of selectedPermissions
+const handleSubmit = () => {
+    // Implement submission logic here
 };
-
-  // Logic to handle other aspects of user creation
 </script>
+
+<style scoped></style>
