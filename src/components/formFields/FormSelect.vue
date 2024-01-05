@@ -9,6 +9,7 @@
       v-model="selected"
       @change="updateSelection"
     >
+      <option disabled value="" class="discord-option">{{ defaultOption }}</option>
       <option
         v-for="option in options"
         :key="option.value"
@@ -28,6 +29,10 @@ const props = defineProps({
   selectId: {
     type: String,
     required: true
+  },
+  defaultOption: {
+    type: String,
+    default: 'Choose an option'
   },
   options: {
     type: Array,

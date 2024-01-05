@@ -6,6 +6,7 @@ import axios from 'axios'
 
 import App from './App.vue'
 import router from './router'
+import { useUserStore } from '@/stores/user'
 
 const app = createApp(App)
 
@@ -23,5 +24,9 @@ axios.interceptors.request.use((config) => {
 })
 
 axios.defaults.baseURL = 'http://localhost:3000/'
+
+// Refresh user info
+const userStore = useUserStore();
+userStore.refreshUserInfo();
 
 app.mount('#app')

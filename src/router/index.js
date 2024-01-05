@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import ResourcesView from '../views/ResourcesView.vue'
 import LoginView from '../views/LoginView.vue'
+import { useUserStore } from '@/stores/user';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,10 +17,6 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: RegisterView
-    },{
-      path: '/login',
-      name: 'login',
-      component: LoginView
     },
     {
       path: '/resources',
@@ -34,7 +31,8 @@ const router = createRouter({
     {
       path: '/admin',
       name: 'admin',
-      component: () => import('../components/layouts/AuthLayout.vue')
+      component: () => import('../views/admin/AdminDashboard.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true }
     },
     {
       path: '/accounts',
@@ -43,5 +41,16 @@ const router = createRouter({
     }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  const userStore = useUserStore();
+  if (to.meta.requiresAuth && !userStore.isLoggedIn) {
+    next({ name: 'guess', query: { redirect: to.fullPath } });
+  } else if (to.meta.requiresAdmin && !userStore.isAdmin) {
+    next({ name: 'home' }); // Redirect non-admin users to the home page or another appropriate page
+  } else {
+    next();
+  }
+});
 
 export default router

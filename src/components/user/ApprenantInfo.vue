@@ -21,22 +21,28 @@
 <script setup>
 import FormInput from '../formFields/FormInput.vue';
 import FormSelect from '../formFields/FormSelect.vue';
-import { ref, reactive, toRefs } from 'vue';
+import { ref, reactive, toRefs, onMounted } from 'vue';
+import axios from 'axios';
 
 const apprenantInfo = reactive({
   matricule: '',
   departementId: ''
 });
 
-const departements = [
-  // { value: 'departement_id', text: 'Departement Name' },
-  // Populate this array with departement options
-  { value: '1', text: 'TIC' },
-  { value: '2', text: 'RSE' },
-  { value: '3', text: 'RH' },
-  { value: '4', text: 'Gestion' },
-  { value: '5', text: 'Finance' }
-];
+const departements = ref([]);
+
+onMounted(() => {
+  axios.get('departement/departement/get')
+    .then((response) => {
+      departements.value = response.data.map(element => ({
+        'value': element.departement_id,
+        'text': element.nom_departement
+      }));
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
 
 defineExpose({ apprenantInfo: toRefs(apprenantInfo) });
 </script>
