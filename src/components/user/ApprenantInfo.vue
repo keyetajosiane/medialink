@@ -13,7 +13,7 @@
       label="Département"
       :options="departements"
       selectId="departement"
-      v-model="apprenantInfo.departementId"
+      v-model="apprenantInfo.departement_id"
       defaultOption="Choose departement"
     />
   </div>
@@ -27,7 +27,7 @@ import axios from 'axios';
 
 const apprenantInfo = reactive({
   matricule: '',
-  departementId: ''
+  departement_id: ''
 });
 
 const departements = ref([]);

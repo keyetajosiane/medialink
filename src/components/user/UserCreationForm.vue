@@ -35,6 +35,7 @@ import FormButton from '../formFields/FormButton.vue';
 import FormIndicator from '../forms/FormIndicator.vue';
 import VueBasicAlert from 'vue-basic-alert';
 import { initFlowbite } from 'flowbite';
+import axios from 'axios';
 
 const loading = ref(false);
 const alert = ref(null);
@@ -48,18 +49,32 @@ const handleBaseAccountInfo = (data) => {
     Object.keys(data).forEach((key) => {
         userAccountInfo.value[key] = data[key].value;
     })
-    console.log(userAccountInfo.value);
+    // console.log(userAccountInfo.value);
 };
 
 const handleSubmit = () => {
     // Implement submission logic here
     // Simulate account creation
     loading.value = true;
-    // Simulate a delay for account creation
-    setTimeout(() => {
-        loading.value = false;
-        alert.value.showAlert('success', 'Account creation successful', "success!!");
-    }, 2000);
+    axios.post('apprenant/apprenant/insert', userAccountInfo.value)
+        .then(response => {
+            console.log(response.data);
+            loading.value = false;
+            alert.value.showAlert('success', 'Account created successfully', "success!!");
+        })
+        .catch(error => {
+            console.log(error);
+            if(error.response && error.response.data){
+                alert.value.showAlert('error', error.response.data.message, "error!!");
+            }
+            else{
+                alert.value.showAlert('error', 'Failed to create account', "error!!");
+            }
+            loading.value = false;
+        })
+        .finally(() => {
+            loading.value = false;
+        })
 };
 </script>
 

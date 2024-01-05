@@ -1,14 +1,14 @@
 <template>
     <div class="flex flex-wrap justify-around items-center">
         <div class="max-w-md">
-            <!-- Username Input -->
-            <FormInput label="Username" inputId="username" type="text" v-model="accountInfo.username" />
+            <!-- user_name Input -->
+            <FormInput label="user_name" inputId="user_name" type="text" v-model="accountInfo.user_name" />
     
             <!-- First Name Input -->
-            <FormInput label="First Name" inputId="firstName" type="text" v-model="accountInfo.firstName" />
+            <FormInput label="First Name" inputId="first_name" type="text" v-model="accountInfo.first_name" />
     
             <!-- Last Name Input -->
-            <FormInput label="Last Name" inputId="lastName" type="text" v-model="accountInfo.lastName" />
+            <FormInput label="Last Name" inputId="last_name" type="text" v-model="accountInfo.last_name" />
     
             <!-- Email Input -->
             <FormInput label="Email" inputId="email" type="email" v-model="accountInfo.email" />
@@ -17,7 +17,7 @@
             <FormInput label="Password" inputId="password" type="password" v-model="accountInfo.password" />
     
             <!-- Is Admin Checkbox -->
-            <FormCheckbox label="Is Admin?" checkboxId="isAdmin" v-model="accountInfo.isAdmin" />
+            <FormCheckbox label="Is Admin?" checkboxId="is_admin" v-model="accountInfo.is_admin" />
     
             <!-- Role Selection -->
             <FormSelect label="Role" :options="accountRoles" selectId="" :modelValue="accountInfo.role" v-model="accountInfo.role" defaultOption="Choose role" />
@@ -43,10 +43,10 @@ const accountInfo = reactive({
     password: '',
     confirmPassword: '',
     role: '',
-    firstName: '',
-    lastName: '',
-    username: '',
-    isAdmin: false,
+    first_name: '',
+    last_name: '',
+    user_name: '',
+    is_admin: false,
     permissions: []
 });
 
@@ -86,7 +86,6 @@ onMounted(() => {
 const handleUserPermissionsChange = (newPermissions) => {
   userPermissions.value = newPermissions;
   accountInfo.permissions = newPermissions;
-  console.log(userPermissions.value);
 };
 
 const emit = defineEmits(['update:baseAccountInfo']);
