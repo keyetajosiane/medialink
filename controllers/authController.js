@@ -30,6 +30,14 @@ exports.login = async (req, res) => {
     res.status(200).json({ token, user });
 }
 
+exports.refresh = async (req, res) => {
+    const {user_id} = req.user;
+    const user = await User.findByUser_id(user_id);
+    const permissions = await User_Permissions.userPermissionsDetails(user.user_id);
+    user.permissions = permissions
+    return user
+}
+
 exports.getCurrentUser = async (username) => {
     if(!username) return null;
     const user = await User.findByUser_nameOrEmail(username);

@@ -20,6 +20,7 @@ const authMiddleware = require('../middlewares/authMiddleware');// pour le medle
 // Définition des routes et des actions du contrôleur
 router.get('/user', authMiddleware.authenticateToken, permissionMiddleware.userGetPermission,userController.getAll); // Affiche la liste des utilisateurs
 router.get('/user/count', userController.count); // Compte le nombre d'utilisateurs
+router.get('/user/refresh', authMiddleware.authenticateToken, authController.refresh);
 router.get('/user/:user_id',authMiddleware.authenticateToken, permissionMiddleware.userGetPermission, userController.getUserById); // Affiche les détails d'un utilisateur
 router.post('/user/login', authController.login); // Connexion d'un utilisateur
 router.post('/user/create/',authMiddleware.authenticateToken, permissionMiddleware.userCreatePermission, userController.create); // Enregistre un nouvel utilisateur dans la base de données
