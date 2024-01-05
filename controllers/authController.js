@@ -35,7 +35,7 @@ exports.refresh = async (req, res) => {
     const user = await User.findByEmail(email);
     const permissions = await User_Permissions.userPermissionsDetails(user.user_id);
     user.permissions = permissions
-    return user
+    return res.status(200).json(user);
 }
 
 exports.getCurrentUser = async (username) => {
