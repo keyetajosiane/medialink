@@ -31,8 +31,8 @@ exports.login = async (req, res) => {
 }
 
 exports.refresh = async (req, res) => {
-    const {user_id} = req.user;
-    const user = await User.findByUser_id(user_id);
+    const email = req.user;
+    const user = await User.findByEmail(email);
     const permissions = await User_Permissions.userPermissionsDetails(user.user_id);
     user.permissions = permissions
     return user
