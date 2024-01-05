@@ -11,8 +11,9 @@ require('dotenv').config();
  * @returns {Promise<void>} - A promise that resolves when the login is successful.
  */
 exports.login = async (req, res) => {
-    const { user_name, password } = req.body;
-    const user = await User.findByUser_nameOrEmail(user_name);
+    const { username, password } = req.body;
+    console.log(username, password);
+    const user = await User.findByUser_nameOrEmail(username);
     if (!user) {
         return res.status(400).json({ message: 'Invalid username or password' });
     }

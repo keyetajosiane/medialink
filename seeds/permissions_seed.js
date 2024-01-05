@@ -5,7 +5,7 @@ const permissions = [
     "resource_read",
     "resource_create",
     "resource_delete",
-    "ressource_update",
+    "resource_update",
     "user_get",
     "user_create",
     "user_update",

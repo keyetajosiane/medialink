@@ -41,7 +41,7 @@ async function initializeDatabase() {
     await createTable(ressourcesTableSql, 'ressources');
 
     // Departement table
-    var departementTableSql = "CREATE TABLE IF NOT EXISTS departement(departement_id INT PRIMARY KEY AUTO_INCREMENT, nom_departement varchar(255))";
+    var departementTableSql = "CREATE TABLE IF NOT EXISTS departement(departement_id INT PRIMARY KEY AUTO_INCREMENT, nom_departement varchar(255) UNIQUE)";
     await createTable(departementTableSql, 'departement');
 
     // Apprenant table
