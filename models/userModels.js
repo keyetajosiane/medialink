@@ -16,12 +16,11 @@ class User {
          
          const [res] = await conn.query(
             `
-          INSERT INTO user (user_name, email, password, first_name, last_name, role)
-          VALUES (?, ?, ?, ?, ?, ?)`,
-            [user.user_name, user.email, hash, user.first_name, user.last_name, user.role]
+          INSERT INTO user (user_name, email, password, first_name, last_name, role, is_admin)
+          VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [user.user_name, user.email, hash, user.first_name, user.last_name, user.role, user.is_admin]
             
          );
-         console.log(user.password);
          conn.end();
          return res.insertId;
       } catch (error) {

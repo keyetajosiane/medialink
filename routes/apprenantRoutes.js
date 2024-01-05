@@ -14,7 +14,8 @@ const permissionMiddleware = require('../middlewares/permissionMiddleware');// p
 router.get('/apprenant/count', apprenantControllers.count);
 router.get('/apprenant',authMiddleware.authenticateToken, permissionMiddleware.userGetPermission, apprenantControllers.getAll); // Affiche la liste des apprenants
 router.get('/apprenant/:apprenant_id',authMiddleware.authenticateToken, permissionMiddleware.userGetPermission, apprenantControllers.getapprenantById ); // Affiche les détails d'un apprenant grace a son id
-router.post('/apprenant/insert/',authMiddleware.authenticateToken, permissionMiddleware.userCreatePermission, apprenantControllers.insert); // Enregistre un nouvel apprenant dans la base de données
+router.post('/apprenant/insert/',authMiddleware.authenticateToken, apprenantControllers.insert); // Enregistre un nouvel apprenant dans la base de données
+// router.post('/apprenant/insert/',authMiddleware.authenticateToken, permissionMiddleware.userCreatePermission, apprenantControllers.insert); // Enregistre un nouvel apprenant dans la base de données
 router.put('/apprenant/:apprenant_id',authMiddleware.authenticateToken, permissionMiddleware.userUpdatePermission, apprenantControllers.updateApprenant); // Met à jour un apprenant dans la base de données
 router.put('/apprenant/departement/:apprenant_id', departementController.update); 
 router.delete('/apprenant/:apprenant_id', apprenantControllers.delete); // Supprime un apprenant de la base de données

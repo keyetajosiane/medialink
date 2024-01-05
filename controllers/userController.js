@@ -7,23 +7,41 @@ exports.getAll = async (req, res) => {
   const users = await User.findAll();
   res.json(users);
 };
-exports.create = async (req, res) => {
+exports.create = async (req, res, callBack = null) => {
     const create_data = req.body;
+    // username, password, role and email are required
+    if (!create_data.user_name || !create_data.password || !create_data.role || !create_data.email) {
+        if(callBack){
+            return callBack({ message: "username, password, role and email are required", status: 400 });
+        }
+        res.status(400).json({ message: "username, password, role and email are required" });
+        return;
+    }
+
     // check if the email is unique
     let user = await User.findByEmail(create_data.email)
     if (user) {
+        if(callBack){
+            return callBack({ message: "email already exist", status: 409 });
+        }
         res.status(409).json({ message: "email already exist" });
         return;
     }
     // check if the user_name is unique
     user = await User.findByUser_nameOrEmail(create_data.user_name)
     if (user) {
+        if(callBack){
+            return callBack({ message: "user_name already exist", status: 409 });
+        }
         res.status(409).json({ message: "user_name already exist" });
         return;
     }
     // insert the user in the users table
     const user_id = await User.create(create_data)
     if (user_id === false) {
+        if(callBack){
+            return callBack({ message: "Unable to create this user due to an internal server error", status: 500 });
+        }
         res.status(500).json({ message: "Unable to create this user due to an internal server error" });
         return;
     }
@@ -49,7 +67,10 @@ exports.create = async (req, res) => {
     const new_user = await User.findByUser_id(user_id)
     delete new_user.password; // supprimer le mot de passe de l'objet new_user
     new_user.permissions = permissions; // ajouter le champ permissions à l'objet new_user
-    res.json(new_user)
+    if(callBack){
+        return callBack({ user: new_user, status: 201 });
+    }
+    return res.status(201).json(new_user)
 };
 
 
