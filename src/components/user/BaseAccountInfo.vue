@@ -20,22 +20,22 @@
             <FormCheckbox label="Is Admin?" checkboxId="isAdmin" v-model="accountInfo.isAdmin" />
     
             <!-- Role Selection -->
-            <FormSelect label="Role" :options="accountRoles" selectId="" :modelValue="accountInfo.role" v-model="accountInfo.role" />
+            <FormSelect label="Role" :options="accountRoles" selectId="" :modelValue="accountInfo.role" v-model="accountInfo.role" defaultOption="Choose role" />
         </div>
         <div class="">
             <!-- Permissions selection -->
             <PermissionsManager :permissionsData="permissionsData" :groupNames="groupNames" :userPermissions="userPermissions" @update="handleUserPermissionsChange" />
         </div>
     </div>
-    <slot :accountInfo="accountInfo"></slot>
 </template>
 
 <script setup>
-import { ref,reactive, toRefs } from 'vue';
+import { ref,reactive, toRefs, onMounted, watch, defineEmits } from 'vue';
 import FormInput from '../formFields/FormInput.vue';
 import FormSelect from '../formFields/FormSelect.vue';
 import FormCheckbox from '../formFields/FormCheckbox.vue';
 import PermissionsManager from '../user/PermissionsManager.vue';
+import axios from 'axios';
 
 // Define the common account information here
 const accountInfo = reactive({
@@ -46,7 +46,8 @@ const accountInfo = reactive({
     firstName: '',
     lastName: '',
     username: '',
-    isAdmin: false
+    isAdmin: false,
+    permissions: []
 });
 
 const accountRoles = [
@@ -62,27 +63,35 @@ const groupNames = {
   'user': 'User Permissions'
 };
 
-const permissionsData = [
-  { permissions_id: 10, nom: 'departement_create', group: 'departement' },
-  { permissions_id: 11, nom: 'departement_delete', group: 'departement' },
-  { permissions_id: 9, nom: 'departement_get', group: 'departement' },
-  { permissions_id: 12, nom: 'departement_update', group: 'departement' },
-  { permissions_id: 2, nom: 'resource_create', group: 'resource' },
-  { permissions_id: 3, nom: 'resource_delete', group: 'resource' },
-  { permissions_id: 1, nom: 'resource_read', group: 'resource' },
-  { permissions_id: 4, nom: 'resource_update', group: 'resource' },
-  { permissions_id: 6, nom: 'user_create', group: 'user' },
-  { permissions_id: 8, nom: 'user_delete', group: 'user' },
-  { permissions_id: 5, nom: 'user_get', group: 'user' },
-  { permissions_id: 7, nom: 'user_update', group: 'user' }
-];
+const permissionsData = ref([]);
 
-const userPermissions = ref([1,12]);
+const userPermissions = ref([]);
+
+onMounted(() => {
+  async function getPermissionsList() {
+      try {
+          const response = await axios.get('permissions/permission');
+          permissionsData.value = response.data.map((permission) => ({
+            ...permission,
+            group: permission.nom.split('_')[0]
+          }));
+      } catch (error) {
+          console.error(`Failed to fetch permissions: ${error}`);
+      }
+  }
+
+  getPermissionsList();
+});
+
 const handleUserPermissionsChange = (newPermissions) => {
   userPermissions.value = newPermissions;
+  accountInfo.permissions = newPermissions;
   console.log(userPermissions.value);
 };
 
-// Export accountInfo so it can be used in the parent component
-defineExpose({ accountInfo: toRefs(accountInfo) });
+const emit = defineEmits(['update:baseAccountInfo']);
+
+watch(accountInfo, () => {
+  emit('update:baseAccountInfo', toRefs(accountInfo));
+});
 </script>

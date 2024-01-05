@@ -12,11 +12,15 @@
 
 <script setup>
 import FormInput from '../formFields/FormInput.vue';
-import { ref, reactive, toRefs } from 'vue';
+import { ref, reactive, toRefs, watch, defineEmits } from 'vue';
 
 const administratifInfo = reactive({
   poste: ''
 });
 
-defineExpose({ administratifInfo: toRefs(administratifInfo) });
+const emit = defineEmits(['update:baseAccountInfo']);
+
+watch(administratifInfo, () => {
+  emit('update:baseAccountInfo', toRefs(administratifInfo));
+});
 </script>

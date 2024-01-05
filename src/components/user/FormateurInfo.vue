@@ -12,12 +12,16 @@
 
 <script setup>
 import FormInput from '../formFields/FormInput.vue';
-import { ref, reactive,toRefs, onMounted } from 'vue';
+import { ref, reactive,toRefs, onMounted, watch, defineEmits } from 'vue';
 import axios from 'axios';
 
 const formateurInfo = reactive({
   matiereDispensee: ''
 });
 
-defineExpose({ formateurInfo: toRefs(formateurInfo) });
+const emit = defineEmits(['update:baseAccountInfo']);
+
+watch(formateurInfo, () => {
+  emit('update:baseAccountInfo', toRefs(formateurInfo));
+});
 </script>
