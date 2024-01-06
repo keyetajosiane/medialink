@@ -18,7 +18,7 @@ const seedDepartement = async () => {
         // create the permissions
         console.log(`Seeding departement...`);
         for (const departemen of departement) {
-            await connection.query(`INSERT INTO departement (nom_departement) VALUES ('${departemen}')`);
+            await connection.query(`INSERT INTO departement (nom_departement) VALUES ("${departemen}")`);
             console.log(`Inserted permission: ${departemen}`);
         }
         // close the connection
@@ -28,4 +28,5 @@ const seedDepartement = async () => {
     }
 }
 
-seedDepartement();
+module.exports = {seedDepartement};
+// seedDepartement();

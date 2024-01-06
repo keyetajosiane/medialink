@@ -41,5 +41,8 @@ async function createAdminAccount() {
   }
 }
 
+// export the function
+module.exports = {createAdminAccount};
+
 // Call the function to create an admin account
-createAdminAccount();
+// createAdminAccount();

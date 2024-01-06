@@ -36,4 +36,5 @@ const seedCSModules = async () => {
   }
 };
 
-seedCSModules();
+module.exports = { seedCSModules };
+// seedCSModules();

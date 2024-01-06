@@ -34,4 +34,5 @@ const seedPermissions = async () => {
     }
 }
 
-seedPermissions();
+module.exports = {seedPermissions};
+// seedPermissions();
