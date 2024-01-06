@@ -1,5 +1,5 @@
 const util = require('util');
-const {connection} = require("./connection");
+const { connection } = require("./connection");
 
 console.log("Starting database initialization");
 
@@ -24,6 +24,59 @@ async function createTable(query, tableName) {
   } catch (err) {
     // Log an error message if there's an error creating the table
     console.error(`Error creating table ${tableName}:`, err);
+  }
+}
+
+async function columnExists(tableName, columnName) {
+  try {
+    const query = `
+      SELECT COUNT(*) AS count
+      FROM information_schema.columns
+      WHERE table_schema = DATABASE() AND table_name = ? AND column_name = ?;
+    `;
+    const [rows] = await connection.query(query, [tableName, columnName]);
+    
+    // Check if rows is not undefined and has at least one result
+    if (rows && rows.length > 0) {
+      return rows[0]['count'] > 0;
+    } else {
+      // Log for debugging
+      console.error('Unexpected result structure:', rows);
+      return false;
+    }
+  } catch (err) {
+    // Log an error message if there's an error executing the query
+    console.error('Error checking column existence:', err);
+    throw err; // Rethrow the error to handle it further up the call stack
+  }
+}
+
+async function alterTable(sql, tableName) {
+  try {
+    await connection.query(sql);
+    console.log(`Table ${tableName} altered successfully.`);
+  } catch (err) {
+    console.error(`Error altering table ${tableName}:`, err);
+  }
+}
+
+async function ensureColumn(tableName, columnName, columnDefinition) {
+  const exists = await columnExists(tableName, columnName);
+  if (!exists) {
+    const alterTableSql = `ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnDefinition};`;
+    await alterTable(alterTableSql, tableName);
+  } else {
+    console.log(`Column ${columnName} already exists in ${tableName}.`);
+  }
+}
+
+// Function to alter a table, only if the column does not exist
+async function alterTableWithCheck(sql, tableName, columnName) {
+  const exists = await columnExists(tableName, columnName);
+  if (!exists) {
+    await alterTable(sql, tableName);
+  } else {
+    console.log(`Column ${columnName} already exists in ${tableName}, skipping alteration.`);
   }
 }
 
@@ -80,7 +133,6 @@ async function initializeDatabase() {
     // Formateurs table
     var formateursTableSql = `CREATE TABLE IF NOT EXISTS formateur (
       formateur_id INT PRIMARY KEY AUTO_INCREMENT,
-      matiere_dispensee VARCHAR(255),
       user_id INT NOT NULL UNIQUE,
       FOREIGN KEY (user_id) REFERENCES user(user_id)
     )`;
@@ -96,7 +148,59 @@ async function initializeDatabase() {
     )`;
     await createTable(departementsFormateursTableSql, 'departements_formateurs');
 
-    
+    // Modules table
+    var modulesTableSql = `CREATE TABLE IF NOT EXISTS modules (
+    module_id INT PRIMARY KEY AUTO_INCREMENT,
+    module_name VARCHAR(255),
+    description TEXT,
+    departement_id INT NOT NULL,
+    FOREIGN KEY (departement_id) REFERENCES departement(departement_id)
+  )`;
+    await createTable(modulesTableSql, 'modules');
+
+    // Formateurs Modules junction table with academic year
+    var formateursModulesTableSql = `CREATE TABLE IF NOT EXISTS formateur_modules (
+      formateur_id INT NOT NULL,
+      module_id INT NOT NULL,
+      academic_year VARCHAR(255) NOT NULL,
+      FOREIGN KEY (formateur_id) REFERENCES formateur(formateur_id),
+      FOREIGN KEY (module_id) REFERENCES modules(module_id),
+      PRIMARY KEY (formateur_id, module_id, academic_year) -- Composite primary key now includes academic_year
+    )`;
+    await createTable(formateursModulesTableSql, 'formateur_modules');
+
+    // Apprenant Modules junction table with academic year
+    var apprenantModulesTableSql = `CREATE TABLE IF NOT EXISTS apprenant_modules (
+      apprenant_id INT NOT NULL,
+      module_id INT NOT NULL,
+      academic_year VARCHAR(255) NOT NULL,
+      FOREIGN KEY (apprenant_id) REFERENCES apprenant(apprenant_id),
+      FOREIGN KEY (module_id) REFERENCES modules(module_id),
+      PRIMARY KEY (apprenant_id, module_id, academic_year) -- Composite primary key now includes academic_year
+    )`;
+    await createTable(apprenantModulesTableSql, 'apprenant_modules');
+
+    // Metadata fields
+    const metadataFieldsSql = `
+    ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    ADD COLUMN created_by INT,
+    ADD CONSTRAINT fk_{tableName}_created_by FOREIGN KEY (created_by) REFERENCES user(user_id)
+  `;
+
+    // Tables to be updated with metadata fields
+    const tablesWithMetadata = ['ressources', 'departement', 'apprenant', 'permissions', 'administrations_members', 'formateur', 'modules'];
+
+    // Add metadata fields to each table, checking if they exist first
+    for (const tableName of tablesWithMetadata) {
+      await ensureColumn(tableName, 'created_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
+      await ensureColumn(tableName, 'updated_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
+      await ensureColumn(tableName, 'created_by', 'INT');
+      await alterTableWithCheck(`
+      ALTER TABLE ${tableName}
+      ADD CONSTRAINT fk_${tableName}_created_by FOREIGN KEY (created_by) REFERENCES user(user_id)
+    `, tableName, 'created_by');
+    }
 
     await connection.end();
     console.log('Connection ended');

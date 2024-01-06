@@ -7,7 +7,8 @@ const departement = [
 "Technologies_Multimedia_et_Graphisme2D/3D",
 "Techniques_Informatiques_et_Systemes_d_Information",
 "Techniques_Industrielles_et_Maintenance",
-"Techniques_Logistiques_Import_Export_et_Douane"
+"Techniques_Logistiques_Import_Export_et_Douane",
+"Technologie de l'Information et de la Communication",
 ]
 
 const seedDepartement = async () => {
