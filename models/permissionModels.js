@@ -7,10 +7,10 @@ class permissions {
             const conn = await createConnection();
             const [res] = await conn.query(
                 `
-                INSERT INTO permissions (nom)
-                VALUES (?)
+                INSERT INTO permissions (nom, created_by)
+                VALUES (?, ?)
                 `,
-                [permission.nom]
+                [permission.nom, permission.created_by]
             );
             conn.end();
             return res.insertId;

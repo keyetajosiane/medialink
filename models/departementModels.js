@@ -6,10 +6,10 @@ class departement {
         const conn = await createConnection();
         const [res] = await conn.query(
             `
-      INSERT INTO departement  (nom_departement)
-      VALUES (?)
+      INSERT INTO departement  (nom_departement, created_by)
+      VALUES (?, ?)
       `,
-            [departement.nom_departement]
+            [departement.nom_departement, departement.created_by]
         );
         conn.end();
             return res.insertId;

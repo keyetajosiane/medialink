@@ -189,7 +189,7 @@ async function initializeDatabase() {
   `;
 
     // Tables to be updated with metadata fields
-    const tablesWithMetadata = ['ressources', 'departement', 'apprenant', 'permissions', 'administrations_members', 'formateur', 'modules'];
+    const tablesWithMetadata = ['departement', 'apprenant', 'permissions', 'administrations_members', 'formateur', 'modules'];
 
     // Add metadata fields to each table, checking if they exist first
     for (const tableName of tablesWithMetadata) {

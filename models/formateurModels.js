@@ -8,10 +8,10 @@ class formateur{
         const conn = await createConnection();
        const [res]= await conn.query(
             `
-      INSERT INTO formateur  (formateur_id , matiere_dispensee, user_id)
+      INSERT INTO formateur  (formateur_id , created_by, user_id)
       VALUES (?,?,?)
       `,
-            [formateur.formateur_id, formateur.matiere_dispensee, formateur.user_id]
+            [formateur.formateur_id, formateur.created_by, formateur.user_id]
         );
         conn.end();
         return res.insertId;
@@ -27,19 +27,7 @@ class formateur{
         conn.end();
         return result[0] || null;
     }
-    static async findBymatiere_dispensee(matiere_dispensee) {
-        const conn = await createConnection();
-        const [result] = await conn.query('SELECT * FROM formateur WHERE  matiere_dispensee = ?', [matiere_dispensee]);
-        conn.end();
-        return result[0] || null;
-    }
- //all about update=mettre a jour   
-    static async updateMatiere_dispensee(matiere_dispensee) {
-        const conn = await createConnectiont ();
-        const [result] = await conn.query('UPDATE formateur SET matiere_dispensee = ? WHERE id = ?', [matiere_dispensee]);
-        conn.end();
-        return result.affectedRows || null;
-    }
+
      // update all fields of a formateur object
      static async updateFormateur(formateur_id, formateur) {
         const conn = await createConnection();

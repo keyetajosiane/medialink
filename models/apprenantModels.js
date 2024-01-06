@@ -5,10 +5,10 @@ class apprenant {
         const conn = await createConnection();
          const [res]=  await conn.query(
             `
-      INSERT INTO apprenant (matricule, user_id, departement_id)
-      VALUES (?,?,?)
+      INSERT INTO apprenant (matricule, user_id, departement_id, created_by)
+      VALUES (?,?,?,?)
       `,
-            [apprenant.matricule,apprenant.user_id,apprenant.departement_id]
+            [apprenant.matricule,apprenant.user_id,apprenant.departement_id,apprenant.created_by]
         );
         conn.end();
           return res.insertId;

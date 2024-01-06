@@ -1,4 +1,5 @@
 const permission = require('../models/permissionModels');
+const _authController = require('../controllers/authController');
 exports.getAll = async (req, res) => {
   const permissions = await permission.findAll();
   res.json(permissions);
@@ -6,11 +7,15 @@ exports.getAll = async (req, res) => {
 
 exports.insert = async (req, res) => {
   const create_data = req.body;
+  const current_user = await _authController.getCurrentUser(req.user);
   // check if the name is unique
   let departemen =  await permission.findByNom(create_data.nom_departement)
   if (departemen) {
       res.status(409).json({ message: "permission allready exist" });
       return;
+  }
+  if(current_user){
+      create_data.created_by = current_user.user_id
   }
   const result =  await permission.insert(create_data)
   if (result === false) {

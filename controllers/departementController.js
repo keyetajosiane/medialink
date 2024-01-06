@@ -1,4 +1,6 @@
 const departement = require('../models/departementModels');
+const _authController = require('./authController');
+
 exports.getAll = async (req, res) => {
   const departemen = await  departement.findAll();
   res.json(departemen);
@@ -6,11 +8,15 @@ exports.getAll = async (req, res) => {
 
 exports.insert = async (req, res) => {
     const create_data = req.body;
+    const current_user = await _authController.getCurrentUser(req.user);
     // check if the name is unique
     let departemen =  await departement.findByNom_departement(create_data.nom_departement)
     if (departemen) {
         res.status(409).json({ message: "nom-departement allready exist" });
         return;
+    }
+    if(current_user){
+        create_data.created_by = current_user.user_id
     }
     const result =  await departement.insert(create_data)
     if (result === false) {

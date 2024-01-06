@@ -22,6 +22,7 @@ exports.insert = async (req, res) => {
     }
     const user = userCreationResult.user;
     create_data['user_id'] = user.user_id;
+    create_data['created_by'] = user.user_id;
 
     const result = await administration_members.insert(create_data);
     if (result === false) {

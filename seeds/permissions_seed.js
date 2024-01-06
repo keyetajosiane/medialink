@@ -13,7 +13,11 @@ const permissions = [
     "departement_get",
     "departement_create",
     "departement_delete",
-    "departement_update"
+    "departement_update",
+    "module_get",
+    "module_create",
+    "module_delete",
+    "module_update",
 
 ]
 

@@ -18,3 +18,9 @@ exports.departementPermissions= {
      update: 'departement_update'
 
 }
+exports.modulePermissions= {
+    get: 'module_get',
+    create: 'module_create',
+    delete: 'module_delete',
+    update: 'module_update'
+}

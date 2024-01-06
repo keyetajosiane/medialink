@@ -8,10 +8,10 @@ class AdminiatrationMembers {
         const conn = await createConnection();
         const [res]= await conn.query(
             `
-      INSERT INTO administrations_members  (poste, user_id)
-      VALUES (?,?)
+      INSERT INTO administrations_members  (poste, user_id, created_by)
+      VALUES (?,?,?)
       `,
-            [administrations_members.poste, administrations_members.user_id]
+            [administrations_members.poste, administrations_members.user_id, administrations_members.created_by]
         );
         conn.end();
         conn.end();

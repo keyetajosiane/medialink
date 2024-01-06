@@ -10,12 +10,6 @@ exports.getAll = async (req, res) => {
 
 exports.create = async (req, res) => {
   const create_data = req.body;
-
-  // matiere_dispensee should be provided
-  if (!create_data.matiere_dispensee) {
-    res.status(400).json({ message: "matiere_dispensee is required" });
-    return;
-  }
   // departements should be provided
   if (!create_data.departements) {
     res.status(400).json({ message: "departements is required" });
@@ -31,6 +25,7 @@ exports.create = async (req, res) => {
     }
     const user = userCreationResult.user;
     create_data['user_id'] = user.user_id;
+    create_data['created_by'] = user.user_id;
 
     // insert the user in the users table
     const formateur_id = await formateur.insert(create_data)

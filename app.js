@@ -50,6 +50,9 @@ app.use('/ressources', ressourceRouter);
 const administration_membersRouter = require('./routes/administration_membersRoutes');
  app.use('/administration_members', administration_membersRouter);
 
+ const modulesRouter = require('./routes/modulesRoutes');
+ app.use('/modules', modulesRouter);
+
 
 
 // This middleware function is used to handle errors in the application.
