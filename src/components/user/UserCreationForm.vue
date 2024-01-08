@@ -10,7 +10,7 @@
                 <div class="max-w-md">
                     <FormateurInfo v-if="userAccountInfo.role === 'formateur'" @update:baseAccountInfo="handleBaseAccountInfo"  />
                     <ApprenantInfo v-if="userAccountInfo.role === 'apprenant'" @update:baseAccountInfo="handleBaseAccountInfo"  />
-                    <AdministratifInfo v-if="userAccountInfo.role === 'membre administratif'" @update:baseAccountInfo="handleBaseAccountInfo"  />
+                    <AdministratifInfo v-if="userAccountInfo.role === 'membre_administratif'" @update:baseAccountInfo="handleBaseAccountInfo"  />
                 </div>
                 <!-- Submit Button -->
                 <div class="max-w-md">
@@ -53,10 +53,13 @@ const handleBaseAccountInfo = (data) => {
 };
 
 const handleSubmit = () => {
-    // Implement submission logic here
-    // Simulate account creation
+    if(!userAccountInfo.value.role){
+        alert.value.showAlert('error', 'Please select a role', "error!!");
+        return;
+    }
+    const url = userAccountInfo.value.role === 'formateur' ? 'formateur/formateur/create' : (userAccountInfo.value.role === 'apprenant' ? 'apprenant/apprenant/insert' : 'administration_members/administration_members/insert');
     loading.value = true;
-    axios.post('apprenant/apprenant/insert', userAccountInfo.value)
+    axios.post(url, userAccountInfo.value)
         .then(response => {
             console.log(response.data);
             loading.value = false;

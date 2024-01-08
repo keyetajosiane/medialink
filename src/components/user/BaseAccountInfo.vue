@@ -53,7 +53,7 @@ const accountInfo = reactive({
 const accountRoles = [
     { value: 'formateur', text: 'Formateur' },
     { value: 'apprenant', text: 'Apprenant' },
-    { value: 'membre administratif', text: 'Membre Administratif' }
+    { value: 'membre_administratif', text: 'Membre Administratif' }
     // Add other roles as needed
 ];
 
