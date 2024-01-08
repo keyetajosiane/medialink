@@ -54,7 +54,7 @@ exports.create = async (req, res) => {
     }
 
     // return the new user
-    const new_form = await formateur.findById(formateur_id);
+    let new_form = await formateur.findById(formateur_id);
     new_form = { ...new_form, ...user };
     new_form.departement = departements; // ajouter le champ departement à l'objet new_form
     return res.status(201).json(new_form);

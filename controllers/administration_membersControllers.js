@@ -30,7 +30,7 @@ exports.insert = async (req, res) => {
       return;
     }
     // return the new user
-    const new_administration_members = await administration_members.findById(result);
+    let new_administration_members = await administration_members.findById(result);
     new_administration_members = { ...new_administration_members, ...user };
     return res.status(201).json(new_administration_members);
   });
