@@ -92,7 +92,7 @@ exports.getformateurByUserId = async (req, res) => {
   let _formateur = await formateur.findByUserId(user_id);
   // inject the user
   if (_formateur) {
-    const user = await userController.getUserInfo(formateur.user_id);
+    const user = await userController.getUserInfo(_formateur.user_id);
     _formateur = { ..._formateur, ...user };
   }
   // Envoi de la réponse au format JSON
