@@ -63,7 +63,7 @@ exports.getadministration_membersByUserId = async (req, res) => {
   // Récupération de l'ID de l'apprenant
   const { user_id } = req.params;
   // Recherche de l'utilisateur par ID
-  const administration_member = await administration_members.findByUserId(user_id);
+  let administration_member = await administration_members.findByUserId(user_id);
   // inject the user
   if (administration_member) {
       const user = await userController.getUserInfo(administration_member.user_id);
