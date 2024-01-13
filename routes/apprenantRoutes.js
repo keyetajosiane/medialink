@@ -15,7 +15,8 @@ const permissionMiddleware = require('../middlewares/permissionMiddleware');// p
 router.get('/apprenant/count', apprenantControllers.count);
 router.get('/apprenant',authMiddleware.authenticateToken, permissionMiddleware.userGetPermission, apprenantControllers.getAll); // Affiche la liste des apprenants
 router.get('/apprenant-module', authMiddleware.authenticateToken, permissionMiddleware.userGetPermission,apprenantModuleController.getAllEnrollments); // Affiche la liste des apprenants
-router.get('/apprenant/:apprenant_id',authMiddleware.authenticateToken, permissionMiddleware.userGetPermission, apprenantControllers.getapprenantById ); // Affiche les détails d'un apprenant grace a son id
+router.get('/apprenant/:user_id/user',authMiddleware.authenticateToken, permissionMiddleware.userGetPermission, apprenantControllers.getByUserId);
+router.get('/apprenant/:apprenant_id',authMiddleware.authenticateToken, permissionMiddleware.userGetPermission, apprenantControllers.getapprenantById );
 router.get('/apprenant-module/:apprenant_id/apprenant',authMiddleware.authenticateToken, permissionMiddleware.userGetPermission, apprenantModuleController.getEnrollmentsByApprenant);
 router.get('/apprenant-module/:module_id/module',authMiddleware.authenticateToken, permissionMiddleware.userGetPermission, apprenantModuleController.getEnrollmentsByModule);
 

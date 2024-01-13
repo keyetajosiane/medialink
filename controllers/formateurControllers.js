@@ -2,14 +2,23 @@ const formateur = require('../models/formateurModels');
 const departement = require('../models/departementModels');
 const departement_formateur = require('../models/departement_formateurModels');
 const userController = require('./userController');
+const authController = require('./authController');
 
 exports.getAll = async (req, res) => {
   const formateurs = await formateur.findAll();
+  // inject the user
+  if (formateurs) {
+    for (let i = 0; i < formateurs.length; i++) {
+      const user = await userController.getUserInfo(formateurs[i].user_id);
+      formateurs[i] = { ...formateurs[i], ...user };
+    }
+  }
   res.json(formateurs);
 };
 
 exports.create = async (req, res) => {
   const create_data = req.body;
+  const _auth_user = authController.getCurrentUser(req.user);
   // departements should be provided
   if (!create_data.departements) {
     res.status(400).json({ message: "departements is required" });
@@ -25,7 +34,7 @@ exports.create = async (req, res) => {
     }
     const user = userCreationResult.user;
     create_data['user_id'] = user.user_id;
-    create_data['created_by'] = user.user_id;
+    create_data['created_by'] = _auth_user.user_id;
 
     // insert the user in the users table
     const formateur_id = await formateur.insert(create_data)
@@ -62,28 +71,33 @@ exports.create = async (req, res) => {
 
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 exports.getformateurById = async (req, res) => {
   // Récupération de l'ID de l'apprenant
   const { formateur_id } = req.params;
   // Recherche de l'utilisateur par ID
   const formateurs = await formateur.findById(formateur_id);
+  // inject the user
+  if (formateurs) {
+    const user = await userController.getUserInfo(formateurs.user_id);
+    formateurs = { ...formateurs, ...user };
+  }
   // Envoi de la réponse au format JSON
   res.json(formateurs);
 };
+
+exports.getformateurByUserId = async (req, res) => {
+  // Récupération de l'ID de l'apprenant
+  const { user_id } = req.params;
+  // Recherche de l'utilisateur par ID
+  let _formateur = await formateur.findByUserId(user_id);
+  // inject the user
+  if (_formateur) {
+    const user = await userController.getUserInfo(formateur.user_id);
+    _formateur = { ..._formateur, ...user };
+  }
+  // Envoi de la réponse au format JSON
+  res.json(_formateur);
+}
 
 exports.getformateurBymatiere_dispensee = async (req, res) => {
   // Récupération de l'ID de la ressource

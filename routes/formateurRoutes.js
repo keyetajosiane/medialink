@@ -13,6 +13,7 @@ const permissionMiddleware = require('../middlewares/permissionMiddleware');// p
 router.get('/formateur', formateurControllers.count); 
 router.get('/formateur/get', authMiddleware.authenticateToken, permissionMiddleware.userGetPermission,formateurControllers.getAll); // Affiche la liste des formateurs
 router.get('/formateur-module', authMiddleware.authenticateToken, permissionMiddleware.userGetPermission,formateurModuleController.getAllAssignments);
+router.get('/formateur/:formateur_id/user', authMiddleware.authenticateToken, permissionMiddleware.userGetPermission, formateurControllers.getformateurByUserId );
 router.get('/formateur/:formateur_id', authMiddleware.authenticateToken, permissionMiddleware.userGetPermission, formateurControllers.getformateurById ); // Affiche les détails d'un formateur grace a son id
 router.get('/formateur-module/:formateur_id/formateur',authMiddleware.authenticateToken, permissionMiddleware.userGetPermission, formateurModuleController.getAssignmentsByFormateur);
 router.get('/formateur-module/:formateur_id/module',authMiddleware.authenticateToken, permissionMiddleware.userGetPermission, formateurModuleController.getAssignmentsByModule);

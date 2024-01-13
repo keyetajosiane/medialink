@@ -1,12 +1,24 @@
 const apprenant = require('../models/apprenantModels');
 const departement = require('../models/departementModels');
 const userController = require('./userController');
+const authController = require('./authController');
+
+
 exports.getAll = async (req, res) => {
-    const _apprenant = await apprenant.findAll();
-    res.json(_apprenant);
+    const _apprenants = await apprenant.findAll();
+    // inject the user
+    if (_apprenants) {
+        for (let i = 0; i < _apprenants.length; i++) {
+            const user = await userController.getUserInfo(_apprenants[i].user_id);
+            _apprenants[i] = { ..._apprenants[i], ...user };
+        }
+    }
+    // inject the modules
+    res.json(_apprenants);
 };
 exports.insert = async (req, res) => {
     const create_data = req.body;
+    const _auth_user = authController.getCurrentUser(req.user);
     // check if the matricule is unique
     if(!create_data.matricule){
         res.status(400).json({ message: "matricule is required" });
@@ -40,7 +52,7 @@ exports.insert = async (req, res) => {
         }
         const user = userCreationResult.user;
         create_data['user_id'] = user.user_id;
-        create_data['created_by'] = user.user_id;
+        create_data['created_by'] = _auth_user.user_id;
     
         const result = await apprenant.insert(create_data)
         if (result === false) {
@@ -58,16 +70,40 @@ exports.getapprenantById = async (req, res) => {
     // Récupération de l'ID de l'apprenant
     const { apprenant_id } = req.params;
     // Recherche de l'utilisateur par ID
-    const _apprenant = await apprenant.findById(apprenant_id);
+    let _apprenant = await apprenant.findById(apprenant_id);
+    // inject the user
+    if (_apprenant) {
+        const user = await userController.getUserInfo(_apprenant.user_id);
+        _apprenant = { ..._apprenant, ...user };
+    }
     // Envoi de la réponse au format JSON
     res.json(_apprenant);
 };
+
+exports.getByUserId = async (req, res) => {
+    // Récupération de l'ID de l'apprenant
+    const { user_id } = req.params;
+    // Recherche de l'utilisateur par ID
+    let _apprenant = await apprenant.findByUserId(user_id);
+    // inject the user
+    if (_apprenant) {
+        const user = await userController.getUserInfo(user_id);
+        _apprenant = { ..._apprenant, ...user };
+    }
+    // Envoi de la réponse au format JSON
+    res.json(_apprenant);
+}
 
 exports.getApprenantByMatricule = async (req, res) => {
     // Récupération de l'ID de la ressource
     const { matricule } = req.params;
     // Recherche de l'utilisateur par ID
-    const _apprenant = await apprenant.findByMatricule(matricule);
+    let _apprenant = await apprenant.findByMatricule(matricule);
+    // inject the user
+    if (user) {
+        const user = await userController.getUserInfo(user.user_id);
+        _apprenant = { ..._apprenant, ...user };
+    }
     // Envoi de la réponse au format JSON
     res.json(_apprenant);
 };

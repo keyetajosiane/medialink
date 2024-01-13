@@ -26,6 +26,13 @@ class apprenant {
         return result[0] || null;
     }
 
+    static async findByUserId(user_id) {
+        const conn = await createConnection();
+        const [result] = await conn.query('SELECT * FROM apprenant WHERE user_id = ?', [user_id]);
+        conn.end();
+        return result[0] || null;
+    }
+
     static async findByMatricule(matricule) {
         const conn = await createConnection();
         const [result] = await conn.query('SELECT * FROM apprenant WHERE matricule = ?', [matricule]);

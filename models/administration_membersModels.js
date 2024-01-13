@@ -36,6 +36,13 @@ class AdminiatrationMembers {
         return result[0] || null;
     }
 
+    static async findByUserId(user_id) {
+        const conn = await createConnection();
+        const [result] = await conn.query('SELECT * FROM  administrations_members   WHERE user_id = ?', [user_id]);
+        conn.end();
+        return result[0] || null;
+    }
+
      // update user
    static async updateAdministration_members(id,update_data) {
     const keys = Object.keys(update_data);

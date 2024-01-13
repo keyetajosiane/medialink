@@ -1,12 +1,21 @@
 const administration_members = require('../models/administration_membersModels');
 const userController = require('./userController');
+const authController = require('./authController');
 
 exports.getAll = async (req, res) => {
-  const administration_member = await administration_members.findAll();
-  res.json(administration_member);
+  const administration_members = await administration_members.findAll();
+  // inject the user
+  if (administration_members) {
+    for (let i = 0; i < administration_members.length; i++) {
+      const user = await userController.getUserInfo(administration_members[i].user_id);
+      administration_members[i] = { ...administration_members[i], ...user };
+    }
+  }
+  res.json(administration_members);
 };
 exports.insert = async (req, res) => {
   const create_data = req.body;
+  const _auth_user = authController.getCurrentUser(req.user);
   // poste should be provided
   if(!create_data.poste){
     res.status(400).json({ message: "poste is required" });
@@ -22,7 +31,7 @@ exports.insert = async (req, res) => {
     }
     const user = userCreationResult.user;
     create_data['user_id'] = user.user_id;
-    create_data['created_by'] = user.user_id;
+    create_data['created_by'] = _auth_user.user_id;
 
     const result = await administration_members.insert(create_data);
     if (result === false) {
@@ -41,9 +50,28 @@ exports.getadministration_membersById = async (req, res) => {
   const { id } = req.params;
   // Recherche de l'utilisateur par ID
   const administration_member = await administration_members.findById(id);
+  // inject the user
+  if (administration_member) {
+      const user = await userController.getUserInfo(administration_member.user_id);
+      administration_member = { ...administration_member, ...user };
+  }
   // Envoi de la réponse au format JSON
   res.json(administration_member);
 };
+
+exports.getadministration_membersByUserId = async (req, res) => {
+  // Récupération de l'ID de l'apprenant
+  const { user_id } = req.params;
+  // Recherche de l'utilisateur par ID
+  const administration_member = await administration_members.findByUserId(user_id);
+  // inject the user
+  if (administration_member) {
+      const user = await userController.getUserInfo(administration_member.user_id);
+      administration_member = { ...administration_member, ...user };
+  }
+  // Envoi de la sélection au format JSON
+  res.json(administration_member);
+}
 
 exports.getadministration_membersByPoste = async (req, res) => {
   // Récupération du poste de la ressource
