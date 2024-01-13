@@ -32,6 +32,13 @@ class departement_formateurModels {
         return result[0] || null;
     }
 
+    static async findFormateurDepartementsIDs(formateur_id){
+        const conn = await createConnection();
+        const [result] = await conn.query('SELECT departement_id FROM departement_formateur WHERE formateur_id = ?', [formateur_id]);
+        conn.end();
+        return result || null;
+    }
+
     static async deleteByFormateurId(formateur_id){
         const conn = await createConnection();
         const [result] = await conn.query('DELETE FROM departement_formateur WHERE formateur_id = ?', [formateur_id]);

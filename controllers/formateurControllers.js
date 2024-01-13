@@ -95,6 +95,11 @@ exports.getformateurByUserId = async (req, res) => {
     const user = await userController.getUserInfo(_formateur.user_id);
     _formateur = { ..._formateur, ...user };
   }
+  // inject the departements
+  if (_formateur) {
+    const departements = await departement_formateur.findFormateurDepartementsIDs(_formateur.formateur_id);
+    _formateur.departements = departements.map(departement => departement.departement_id);
+  }
   // Envoi de la réponse au format JSON
   res.json(_formateur);
 }
