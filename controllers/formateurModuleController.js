@@ -71,6 +71,15 @@ class FormateurModuleController {
             res.status(500).json({ message: 'Server error', error });
         }
     }
+
+    static async getModulesIDs(formateur_id, academic_year) {
+        try {
+            const modules = await FormateurModule.findFormateurModulesIDs(formateur_id, academic_year);
+            res.status(200).json(modules);
+        } catch (error) {
+            res.status(500).json({ message: 'Server error', error });
+        }
+    }
 }
 
 module.exports = FormateurModuleController;

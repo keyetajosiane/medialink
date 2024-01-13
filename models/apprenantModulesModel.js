@@ -83,6 +83,19 @@ class ApprenantModule {
         }
     }
 
+    static async findApprenantModulesIDs(apprenant_id, academic_year) {
+        const conn = await createConnection();
+        try {
+            const [result] = await conn.query('SELECT module_id FROM apprenant_modules WHERE apprenant_id = ? AND academic_year = ?', [apprenant_id, academic_year]);
+            return result;
+        } catch (error) {
+            console.error(error);
+            return [];
+        } finally {
+            await conn.end();
+        }
+    }
+
     static async delete(apprenant_id, module_id, academic_year) {
         const conn = await createConnection();
         try {

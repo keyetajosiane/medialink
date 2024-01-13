@@ -83,6 +83,19 @@ class FormateurModule {
         }
     }
 
+    static async findFormateurModulesIDs(formateur_id ,academic_year) {
+        const conn = await createConnection();
+        try {
+            const [result] = await conn.query('SELECT module_id FROM formateur_modules WHERE formateur_id = ? AND academic_year = ?', [formateur_id, academic_year]);
+            return result;
+        } catch (error) {
+            console.error(error);
+            return [];
+        } finally {
+            await conn.end();
+        }
+    }
+
     static async delete(formateur_id, module_id, academic_year) {
         const conn = await createConnection();
         try {
