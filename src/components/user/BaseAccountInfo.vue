@@ -24,7 +24,7 @@
         </div>
         <div class="">
             <!-- Permissions selection -->
-            <PermissionsManager :permissionsData="permissionsData" :groupNames="groupNames" :userPermissions="userPermissions" @update="handleUserPermissionsChange" />
+            <PermissionsManager :userPermissions="userPermissions" @update="handleUserPermissionsChange" />
         </div>
     </div>
 </template>
@@ -57,31 +57,7 @@ const accountRoles = [
     // Add other roles as needed
 ];
 
-const groupNames = {
-  'departement': 'Department Permissions',
-  'resource': 'Resource Permissions',
-  'user': 'User Permissions'
-};
-
-const permissionsData = ref([]);
-
 const userPermissions = ref([]);
-
-onMounted(() => {
-  async function getPermissionsList() {
-      try {
-          const response = await axios.get('permissions/permission');
-          permissionsData.value = response.data.map((permission) => ({
-            ...permission,
-            group: permission.nom.split('_')[0]
-          }));
-      } catch (error) {
-          console.error(`Failed to fetch permissions: ${error}`);
-      }
-  }
-
-  getPermissionsList();
-});
 
 const handleUserPermissionsChange = (newPermissions) => {
   userPermissions.value = newPermissions;

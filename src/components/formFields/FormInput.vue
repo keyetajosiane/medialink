@@ -5,7 +5,7 @@
       <input :id="inputId"
         class="mt-1 block w-full rounded-md bg-discord-dark border-discord-border shadow-none placeholder-discord-gray text-white focus:border-discord-blue focus:ring focus:ring-discord-blue focus:ring-opacity-50"
         :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" @focus="$emit('focus')"
-        @blur="$emit('blur')" :type="type" :placeholder="placeholder" />
+        @blur="$emit('blur')" :type="type" :placeholder="placeholder" :disabled="disabled" />
     </label>
   </div>
 </template>
@@ -20,6 +20,10 @@ const props = defineProps({
   type: {
     type: String,
     default: 'text'
+  },
+  disabled:{
+    type: Boolean,
+    default: false
   },
   placeholder: String
 });

@@ -8,6 +8,8 @@ export const useUserStore = defineStore('user', {
   state: () => ({
     // Initial user state
     userInfo: null,
+    usersList: null,
+    permissions: null,
   }),
   getters: {
     isLoggedIn: (state) => !!state.userInfo, // Boolean indicating if the user is logged in
@@ -16,6 +18,12 @@ export const useUserStore = defineStore('user', {
   actions: {
     setUserInfo(info) {
       this.userInfo = info;
+    },
+    setUsersList(list) {
+      this.usersList = list;
+    },
+    setPermissions(permissions) {
+      this.permissions = permissions;
     },
     clearUserInfo() {
       this.userInfo = null;
@@ -47,6 +55,22 @@ export const useUserStore = defineStore('user', {
         }
       }
     },
+    async loadUsersList() {
+      try {
+        const usersList = await fetchUsers();
+        this.setUsersList(usersList);
+      } catch (error) {
+        console.error('Failed to fetch users list', error);
+      }
+    },
+    async loadPermissions() {
+      try {
+        const permissions = await fetchPermissions();
+        this.setPermissions(permissions);
+      } catch (error) {
+        console.error('Failed to fetch permissions', error);
+      }
+    }
   },
 });
 
@@ -64,6 +88,45 @@ async function fetchUserInfo(token) {
     // Axios automatically throws an error for non-2xx status codes,
     // so you don't need to explicitly check `response.ok` like in the fetch API.
     return response.data;
+  } catch (error) {
+    // Axios wraps the native Error object, including the response property.
+    if (!error.response) {
+      throw new Error('Network error or no response received');
+    }
+    // You can still customize the error message if needed.
+    const customError = new Error(`Fetch failed: ${error.response.status} ${error.response.statusText}`);
+    customError.response = error.response;
+    throw customError;
+  }
+}
+
+// utility function to load users from backend
+async function fetchUsers() {
+  try {
+    const response = await axios.get('user/user');
+    return response.data;
+  } catch (error) {
+    // Axios wraps the native Error object, including the response property.
+    if (!error.response) {
+      throw new Error('Network error or no response received');
+    }
+    // You can still customize the error message if needed.
+    const customError = new Error(`Fetch failed: ${error.response.status} ${error.response.statusText}`);
+    customError.response = error.response;
+    throw customError;
+  }
+}
+
+// utility function to load permissions from backend
+async function fetchPermissions() {
+  try {
+    
+    const response = await axios.get('permissions/permission');
+    const permissionsData = response.data.map((permission) => ({
+      ...permission,
+      group: permission.nom.split('_')[0]
+    }));
+    return permissionsData;
   } catch (error) {
     // Axios wraps the native Error object, including the response property.
     if (!error.response) {

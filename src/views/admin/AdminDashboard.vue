@@ -2,9 +2,10 @@
 import { ref } from 'vue';
 import AuthLayout from '@/components/layouts/AuthLayout.vue';
 import UserCreationForm from '@/components/user/UserCreationForm.vue';
+import UsersList from '../../components/user/UsersList.vue';
 
 // Reactive state to track the current active menu
-const activeMenu = ref('create'); // Possible values: 'create', 'update', 'delete'
+const activeMenu = ref('update'); // Possible values: 'create', 'update', 'delete'
 </script>
 <template>
   <AuthLayout>
@@ -19,32 +20,25 @@ const activeMenu = ref('create'); // Possible values: 'create', 'update', 'delet
         <!-- Submenu buttons -->
         <button
           class="px-4 py-2 rounded-md text-white bg-blue-500 hover:bg-blue-600"
+          :class="{ 'bg-blue-700': activeMenu === 'update' }"
+          @click="activeMenu = 'update'"
+        >
+          View Users
+        </button>
+        <button
+          class="px-4 py-2 rounded-md text-white bg-blue-500 hover:bg-blue-600"
           :class="{ 'bg-blue-700': activeMenu === 'create' }"
           @click="activeMenu = 'create'"
         >
           Create User
         </button>
-        <button
-          class="px-4 py-2 rounded-md text-white bg-blue-500 hover:bg-blue-600"
-          :class="{ 'bg-blue-700': activeMenu === 'update' }"
-          @click="activeMenu = 'update'"
-        >
-          Update User
-        </button>
-        <button
-          class="px-4 py-2 rounded-md text-white bg-blue-500 hover:bg-blue-600"
-          :class="{ 'bg-blue-700': activeMenu === 'delete' }"
-          @click="activeMenu = 'delete'"
-        >
-          Delete User
-        </button>
       </div>
 
       <!-- Conditional rendering of forms based on the activeMenu -->
       <main>
+        <UsersList v-if="activeMenu === 'update'" />
         <UserCreationForm v-if="activeMenu === 'create'" />
-        <!-- <UserUpdateForm v-if="activeMenu === 'update'" />
-        <UserDeleteForm v-if="activeMenu === 'delete'" /> -->
+        <!-- <UserDeleteForm v-if="activeMenu === 'delete'" /> -->
       </main>
     </section>
   </AuthLayout>

@@ -26,13 +26,23 @@
 <script setup>
 import { ref, computed, defineProps, watchEffect, onMounted } from 'vue';
 import FormCheckbox from "../formFields/FormCheckbox.vue";
+import { useUserStore } from '@/stores/user';
 
 // Define the props the component accepts
 const props = defineProps({
-    permissionsData: Array,
-    groupNames: Object, // This object maps group codes to display names
     userPermissions: Array // An array of permission ids that the user has
 });
+
+// Stores
+const userStore = useUserStore();
+
+const permissionsData = ref([]);
+const groupNames = {
+  'departement': 'Department Permissions',
+  'resource': 'Resource Permissions',
+  'user': 'User Permissions',
+  'module': 'Module Permissions',
+};
 
 // Reactive state to keep track of selected permissions
 const selectedPermissions = ref({});
@@ -41,8 +51,14 @@ const selectedPermissions = ref({});
 const emit = defineEmits(['update']);
 
 // Pre-populate selectedPermissions based on userPermissions prop
-onMounted(() => {
-    props.permissionsData.forEach((permission) => {
+onMounted(async () => {
+    
+    // permissions data
+    if(!userStore.permissions){
+        await userStore.loadPermissions()
+    }
+    permissionsData.value = userStore.permissions
+    permissionsData.value.forEach((permission) => {
         selectedPermissions.value[permission.permissions_id] = props.userPermissions.includes(permission.permissions_id);
     });
 });
@@ -50,7 +66,7 @@ onMounted(() => {
 // Computed property to group permissions by category
 const groupedPermissions = computed(() => {
     const groups = {};
-    props.permissionsData.forEach((permission) => {
+    permissionsData.value.forEach((permission) => {
         // Assuming 'group' is a property of permission object that determines the category
         const groupName = permission.group;
         if (!groups[groupName]) {
@@ -64,7 +80,7 @@ const groupedPermissions = computed(() => {
 // Method to determine the display name for a group
 function resolveGroupName(groupCode) {
     // Use the mapping from groupNames prop if available, otherwise default to the group code
-    return props.groupNames[groupCode] || groupCode;
+    return groupNames[groupCode] || groupCode;
 }
 
 // Method to check if a permission is selected
