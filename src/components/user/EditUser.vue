@@ -18,6 +18,28 @@
                 <FormInput label="Email" inputId="email" type="email" v-model="editUserInfo.email" />
             </div>
 
+            <!-- Additional fields for apprenant -->
+            <div class="w-full grid grid-cols-2 gap-4" v-if="editUserInfo.role === 'apprenant'">
+                <!-- Matricule Input -->
+                <FormInput label="Matricule" inputId="matricule" type="text" v-model="editUserInfo.matricule" />
+
+                <!-- Departement Select -->
+                <FormSelect label="Département" :options="departements" selectId="departement"
+                    v-model="editUserInfo.departement_id" defaultOption="Choose departement" />
+            </div>
+
+            <!-- Additional fields for membre_administratif -->
+            <div class="w-full grid grid-cols-2 gap-4" v-if="editUserInfo.role === 'membre_administratif'">
+                <!-- Poste Input -->
+                <FormInput label="Poste" inputId="poste" type="text" v-model="editUserInfo.poste" />
+            </div>
+
+            <!-- Addiational fields for formateur -->
+            <div>
+                <!-- Future attributes for formateur here -->
+                <Departments :userDepartements="editUserInfo.departements" @update="handleDepartmentsChange" />
+            </div>
+
             <div class="">
                 <!-- Permissions selection -->
                 <PermissionsManager :userPermissions="editUserInfo.permissions" @update="handleUserPermissionsChange" />
@@ -39,9 +61,11 @@
 import { ref, reactive, defineProps, onMounted, watch, defineEmits } from 'vue';
 import FormInput from '../formFields/FormInput.vue';
 import FormSelect from '../formFields/FormSelect.vue';
-import PermissionsManager from '../user/PermissionsManager.vue';
+import PermissionsManager from '@/components/user/PermissionsManager.vue';
+import Departments from '@/components/user/Departments.vue';
 import axios from 'axios';
 import { useUserStore } from '@/stores/user';
+import { useDepartmentsStore } from '@/stores/departments';
 import FormIndicator from '@/components/forms/FormIndicator.vue';
 
 const props = defineProps({
@@ -52,13 +76,25 @@ const props = defineProps({
 });
 
 const userStore = useUserStore();
+const departementStore = useDepartmentsStore();
 
 const alert = ref(null);
 // Reactive state for the edit user form
 const editUserInfo = reactive({});
 const loading = ref(false);
+const departements = ref([]);
 
 const emits = defineEmits(['update:editedUser']);
+
+onMounted(async () => {
+    if (!departementStore.isDepartmentsLoaded) {
+        await departementStore.initDepartments();
+    }
+    departements.value = departementStore.departments.map(department => ({
+        'value': department.departement_id,
+        'text': department.nom_departement
+    }));
+});
 
 watch(async () => {
     if (!props.user) {
@@ -81,7 +117,6 @@ watch(async () => {
                 : props.user.role === 'apprenant'
                     ? `apprenant/apprenant/${props.user.user_id}/user`
                     : `administration_members/administration_members/${props.user.user_id}/user`;
-            console.log(url);
             const response = await axios.get(url);
             // Clear existing properties
             Object.keys(editUserInfo).forEach(key => delete editUserInfo[key]);
@@ -90,7 +125,7 @@ watch(async () => {
             Object.entries(response.data).forEach(([key, value]) => {
                 editUserInfo[key] = value;
             });
-            console.log(editUserInfo);
+            // console.log(editUserInfo);
         } catch (error) {
             console.error(`Failed to fetch user: ${error}`);
         }
@@ -103,9 +138,14 @@ const handleUserPermissionsChange = (newPermissions) => {
     editUserInfo.permissions = newPermissions;
 };
 
+const handleDepartmentsChange = (departments) => {
+    editUserInfo.departements = departments;
+};
+
 const submitForm = () => {
     // Logic to submit the form
     loading.value = true;
+    console.log(editUserInfo);
     setTimeout(() => {
         // Replace with actual form submission logic
         console.log('Form submitted');

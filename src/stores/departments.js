@@ -15,7 +15,6 @@ export const useDepartmentsStore = defineStore("departments", {
             try {
                 const departments = await fetchDepartments();
                 this.setDepartments(departments);
-                console.log('Fetched departments:', departments);
             } catch (error) {
                 console.error('Failed to fetch departments', error);
             }
