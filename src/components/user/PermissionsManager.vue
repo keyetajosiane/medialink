@@ -30,9 +30,11 @@ import { useUserStore } from '@/stores/user';
 
 // Define the props the component accepts
 const props = defineProps({
-    userPermissions: Array // An array of permission ids that the user has
+    userPermissions: {
+        type: Array,
+        default: () => [],
+    }
 });
-
 // Stores
 const userStore = useUserStore();
 
@@ -58,6 +60,14 @@ onMounted(async () => {
         await userStore.loadPermissions()
     }
     permissionsData.value = userStore.permissions
+    permissionsData.value.forEach((permission) => {
+        selectedPermissions.value[permission.permissions_id] = props.userPermissions.includes(permission.permissions_id);
+    });
+});
+
+// if userPermissions prop changes, update selectedPermissions
+watchEffect(() => {
+    selectedPermissions.value = {};
     permissionsData.value.forEach((permission) => {
         selectedPermissions.value[permission.permissions_id] = props.userPermissions.includes(permission.permissions_id);
     });

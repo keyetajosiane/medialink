@@ -1,4 +1,5 @@
 <template>
+    <vue-basic-alert ref="alert" :duration="1000" :closeIn="8000" />
     <div class="overflow-x-auto shadow-md sm:rounded-lg">
         <table class="min-w-full bg-gray-900">
             <thead class="bg-gray-700">
@@ -25,16 +26,18 @@
         </table>
 
         <!-- editing section -->
-        <div v-if="isEditing" class="mt-20">
+        <div v-if="isEditing" class="mt-20" ref="editSection">
             <EditUser :user="editingUser" @update:editedUser="closeEdit" />
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, reactive, onMounted, nextTick } from 'vue';
 import { useUserStore } from '@/stores/user';
 import EditUser from '@/components/user/EditUser.vue';
+import VueBasicAlert from 'vue-basic-alert';
+import { initFlowbite } from 'flowbite';
 
 const users = ref([
     // ... your users data
@@ -43,23 +46,45 @@ const users = ref([
 const userStore = useUserStore();
 
 const isEditing = ref(false);
-const editingUser = ref(null);
+const editingUser = reactive({});
+const editSection = ref(null);
+
+const alert = ref(null);
 
 onMounted(async () => {
+    initFlowbite();
+
     if (!userStore.usersList) {
         await userStore.loadUsersList();
     }
     users.value = userStore.usersList;
 });
 
-const editUser = (user) => {
-    editingUser.value = user;
+const editUser = async (user) => {
+    // clear existing properties
+    Object.keys(editingUser).forEach((key) => {
+        delete editingUser[key];
+    })
+    // assign new properties
+    Object.entries(user).forEach(([key, value]) => {
+        editingUser[key] = value;
+    })
     isEditing.value = true;
+    // wait for the DOM to update
+    await nextTick();
+    // scroll to the editing section
+    editSection.value.scrollIntoView({ behavior: 'smooth', block: 'start' });
 };
 
-const closeEdit = () => {
+const closeEdit = async () => {
     isEditing.value = false;
     editingUser.value = null;
+    // show success alert
+    alert.value.showAlert('success', 'User updated successfully', "success!!");
+    // wait for the DOM to update
+    await nextTick();
+    // scroll to the top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 const deleteUser = (user) => {

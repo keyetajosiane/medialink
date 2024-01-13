@@ -1,11 +1,10 @@
 <template>
-    <vue-basic-alert ref="alert" :duration="1000" :closeIn="8000" />
     <div class="edit-user-account">
         <h1 class="text-2xl font-bold mb-4">Edit User Account</h1>
         <!-- Form to edit user account will go here -->
         <form @submit.prevent="submitForm">
             <!-- Input fields for account information -->
-            <div class="w-full">
+            <div class="w-full grid grid-cols-2 gap-4">
                 <!-- user_name Input -->
                 <FormInput label="user_name" inputId="user_name" type="text" v-model="editUserInfo.user_name" disabled />
 
@@ -21,25 +20,29 @@
 
             <div class="">
                 <!-- Permissions selection -->
-                <PermissionsManager
-                    :userPermissions="editUserInfo.permissions" @update="handleUserPermissionsChange" />
+                <PermissionsManager :userPermissions="editUserInfo.permissions" @update="handleUserPermissionsChange" />
             </div>
 
             <!-- Submit button -->
-            <button type="submit">Update Account</button>
+            <div class="grid grid-cols-2 gap-4 items-center m-4">
+                <button type="submit"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Update Account
+                </button>
+                <FormIndicator v-if="loading" message="Updating account ..." class="text-white" />
+            </div>
         </form>
     </div>
 </template>
 
 <script setup>
-import { ref, reactive, defineProps, onMounted, defineEmits } from 'vue';
+import { ref, reactive, defineProps, onMounted, watch, defineEmits } from 'vue';
 import FormInput from '../formFields/FormInput.vue';
 import FormSelect from '../formFields/FormSelect.vue';
 import PermissionsManager from '../user/PermissionsManager.vue';
-import VueBasicAlert from 'vue-basic-alert';
-import { initFlowbite } from 'flowbite';
 import axios from 'axios';
 import { useUserStore } from '@/stores/user';
+import FormIndicator from '@/components/forms/FormIndicator.vue';
 
 const props = defineProps({
     user: {
@@ -52,15 +55,12 @@ const userStore = useUserStore();
 
 const alert = ref(null);
 // Reactive state for the edit user form
-const editUserInfo = reactive({
-    permissions: [],
-});
+const editUserInfo = reactive({});
+const loading = ref(false);
 
 const emits = defineEmits(['update:editedUser']);
 
-onMounted(async () => {
-    initFlowbite();
-
+watch(async () => {
     if (!props.user) {
         console.error('User ID is required');
         alert.value.showAlert('error', 'User ID is required', "error!!");
@@ -69,15 +69,23 @@ onMounted(async () => {
 
     async function fetchUser() {
         try {
+            // for now, don't process admin accounts
+            if (props.user.is_admin) {
+                Object.entries(props.user).forEach(([key, value]) => {
+                    editUserInfo[key] = value;
+                });
+                return;
+            }
             const url = props.user.role === 'formateur'
                 ? `formateur/formateur/${props.user.user_id}/user`
                 : props.user.role === 'apprenant'
                     ? `apprenant/apprenant/${props.user.user_id}/user`
                     : `administration_members/administration_members/${props.user.user_id}/user`;
+            console.log(url);
             const response = await axios.get(url);
             // Clear existing properties
             Object.keys(editUserInfo).forEach(key => delete editUserInfo[key]);
-    
+
             // Assign new properties to maintain reactivity
             Object.entries(response.data).forEach(([key, value]) => {
                 editUserInfo[key] = value;
@@ -92,12 +100,19 @@ onMounted(async () => {
 });
 
 const handleUserPermissionsChange = (newPermissions) => {
-  editUserInfo.permissions = newPermissions;
+    editUserInfo.permissions = newPermissions;
 };
 
 const submitForm = () => {
     // Logic to submit the form
-    console.log('Form submitted', editUserInfo);
+    loading.value = true;
+    setTimeout(() => {
+        // Replace with actual form submission logic
+        console.log('Form submitted');
+        // TODO: Implement form submission to server or handling logic
+        loading.value = false;
+        emits('update:editedUser', editUserInfo);
+    }, 1000); // Simulate form submission after 1 second
 };
 </script>
 
