@@ -25,7 +25,8 @@
 
                 <!-- Departement Select -->
                 <FormSelect label="Département" :options="departements" selectId="departement"
-                    v-model="editUserInfo.departement_id" defaultOption="Choose departement" />
+                    v-model="editUserInfo.departement_id" defaultOption="Choose departement"
+                    />
             </div>
 
             <!-- Additional fields for membre_administratif -->
@@ -35,7 +36,7 @@
             </div>
 
             <!-- Addiational fields for formateur -->
-            <div>
+            <div v-if="editUserInfo.role === 'formateur'" >
                 <!-- Future attributes for formateur here -->
                 <Departments :userDepartements="editUserInfo.departements" @update="handleDepartmentsChange" />
             </div>

@@ -6,9 +6,23 @@ import UsersList from '../../components/user/UsersList.vue';
 
 // Reactive state to track the current active menu
 const activeMenu = ref('update'); // Possible values: 'create', 'update', 'delete'
+const menuItems = [
+  {
+    item: "Departments",
+    link: "/admin/departments"
+  },
+  {
+    item: "Formateurs",
+    link: "/admin/formateurs"
+  },
+  {
+    item: "Resources",
+    link: "/admin/resources"
+  }
+];
 </script>
 <template>
-  <AuthLayout>
+  <AuthLayout :menuItems="menuItems" :homeLink="'/admin'">
     <section class="p-8">
       <header>
         <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">
@@ -38,7 +52,6 @@ const activeMenu = ref('update'); // Possible values: 'create', 'update', 'delet
       <main>
         <UsersList v-if="activeMenu === 'update'" />
         <UserCreationForm v-if="activeMenu === 'create'" />
-        <!-- <UserDeleteForm v-if="activeMenu === 'delete'" /> -->
       </main>
     </section>
   </AuthLayout>

@@ -2,16 +2,18 @@
   <aside class="w-20 h-full bg-gray-800 flex flex-col items-center py-4 shadow-lg">
     <div class="text-white mb-6">
       <!-- Placeholder for home icon -->
-      <span class="block w-10 h-10 bg-blue-500 rounded-lg mb-2"></span>
-      <span class="text-xs">Home</span>
+      <router-link :to="homeLink">
+        <span class="block w-10 h-10 bg-blue-500 rounded-lg mb-2"></span>
+        <span class="text-xs">Home</span>
+      </router-link>
     </div>
     <nav class="flex-1">
       <ul>
-        <li v-for="channel in channels" :key="channel" class="mb-2">
-          <a href="#" class="flex flex-col items-center">
+        <li v-for="menu in props.menuItems" :key="menu.item" class="mb-2">
+          <router-link :to="menu.link" class="flex flex-col items-center">
             <span class="block w-10 h-10 bg-blue-500 rounded-lg mb-2"></span>
-            <span class="text-xs text-white truncate w-full text-center">{{ channel }}</span>
-          </a>
+            <span class="text-xs text-white truncate w-full text-center">{{ menu.item }}</span>
+          </router-link>
         </li>
       </ul>
     </nav>
@@ -24,9 +26,19 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, ref, defineProps } from 'vue';
 
-const channels = ref(['Channel 1', 'Channel 2', 'Channel 3']); // Replace with your own data
+// define props
+const props = defineProps({
+  menuItems: {
+    type: Array,
+    required: true
+  },
+  homeLink: {
+    type: String,
+    default: '/'
+  }
+});
 </script>
 
 <style scoped>
