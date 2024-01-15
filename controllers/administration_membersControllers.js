@@ -1,5 +1,7 @@
 const administration_members = require('../models/administration_membersModels');
+const userModel = require('../models/userModels');
 const userController = require('./userController');
+const userPermissionsController = require('./userPermissionsController');
 const authController = require('./authController');
 
 exports.getAll = async (req, res) => {
@@ -91,12 +93,30 @@ exports.updateAdministration_members = async (req, res) => {
   if (!administration_member) {
     return res.status(404).json({ message: "administration_members not found." })
   }
-  for (const key of Object.keys(administration_update_data)) {
-    //TODO:: if the key is password, hash the password before saving it
-    administration_member[key] = administration_update_data[key]
+  // update the user table
+  const user_update_data = {
+    first_name: administration_update_data.first_name,
+    last_name: administration_update_data.last_name,
+    email: administration_update_data.email,
+    user_name: administration_update_data.user_name,
+    role: administration_update_data.role,
+    is_admin: administration_update_data.is_admin
+  }
+  const updated_user = userModel.updateUser(administration_member.user_id, user_update_data);
+  if (updated_user === null) {
+      return res.status(500).json({ message: "User info update failed due to an internal server error" })
+  }
+  // update the apprenant permissions
+  const updated = await userPermissionsController.updateUserPermissions(administration_update_data.user_id, administration_update_data.permissions);
+  if(!updated){
+      return res.status(500).json({ message: "Update failed, could not update permissions" })
   }
   // Mise à jour du departement dans la base de données
-  const result = await administration_members.updateAdministration_members(id, administration_member);
+  const update_data = {
+      user_id: administration_update_data.user_id,
+      poste: administration_update_data.poste,
+  }
+  const result = await administration_members.updateAdministration_members(id, update_data);
   if (result === null) {
     return res.status(500).json({ message: "Update failed due to an internal server error" })
   }

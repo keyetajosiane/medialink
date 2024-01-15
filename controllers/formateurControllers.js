@@ -1,7 +1,10 @@
 const formateur = require('../models/formateurModels');
 const departement = require('../models/departementModels');
 const departement_formateur = require('../models/departement_formateurModels');
+const userModel = require('../models/userModels');
 const userController = require('./userController');
+const userPermissionsController = require('./userPermissionsController');
+const dep_formateur_controller = require('./departement_formateurControllers');
 const authController = require('./authController');
 
 exports.getAll = async (req, res) => {
@@ -118,22 +121,37 @@ exports.updateFormateur = async (req, res) => {
   // Récupération des données du formulaire
   const formateur_update_data = req.body;
   // get the departement from the database
-  const formateurs = await formateur.findById(formateur_id)   // if the user does not exist, throw an error
-  if (!formateurs) {
+  const _formateur = await formateur.findById(formateur_id)   // if the user does not exist, throw an error
+  if (!_formateur) {
     return res.status(404).json({ message: "formateur not found." })
   }
-  for (const key of Object.keys(formateur_update_data)) {
-    //TODO:: if the key is password, hash the password before saving it
-    formateurs[key] = formateur_update_data[key]
+  // update the user table
+  const user_update_data = {
+    first_name: formateur_update_data.first_name,
+    last_name: formateur_update_data.last_name,
+    email: formateur_update_data.email,
+    user_name: formateur_update_data.user_name,
+    role: formateur_update_data.role,
+    is_admin: formateur_update_data.is_admin
   }
-  // Mise à jour du departement dans la base de données
-  const result = await formateur.updateFormateur(formateur_id, formateurs);
-  if (result === null) {
-    return res.status(500).json({ message: "Update failed due to an internal server error" })
+  const updated_user = userModel.updateUser(formateur_update_data.user_id, user_update_data);
+  if (updated_user === null) {
+    return res.status(500).json({ message: "User info update failed due to an internal server error" })
   }
-  const updated_formateur = await formateur.findById(formateur_id)
+  // update the apprenant permissions
+  const updated = await userPermissionsController.updateUserPermissions(formateur_update_data.user_id, formateur_update_data.permissions);
+  if (!updated) {
+    return res.status(500).json({ message: "Update failed, could not update permissions" })
+  }
 
-  return res.json(updated_formateur)
+  // update the formateur departements table
+  try {
+    const updated = await dep_formateur_controller.updateDepartement_formateur(formateur_id, formateur_update_data.departements)
+  } catch (error) {
+    return res.status(error.code).json({ message: "Update failed, could not update departements" })
+  }
+
+  return res.json(_formateur)
 };
 
 exports.updateMatiere_dispensee = async (req, res) => {

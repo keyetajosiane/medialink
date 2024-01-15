@@ -35,13 +35,6 @@ class formateur {
         return result[0] || null;
     }
 
-    // update all fields of a formateur object
-    static async updateFormateur(formateur_id, formateur) {
-        const conn = await createConnection();
-        const [result] = await conn.query('UPDATE formateur SET ? WHERE formateur_id = ?', [formateur, formateur_id]);
-        conn.end();
-        return result.affectedRows || null;
-    }
     //all about DELETE 
     static async delete(formateur_id) {//suprimer tt les departements
         const conn = await createConnection();
