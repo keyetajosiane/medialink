@@ -35,6 +35,9 @@
                 <FormInput label="Email" inputId="email" type="email" v-model="editUserInfo.email" />
             </div>
 
+            <!-- password input field update -->
+            <UpdatePassword :user="editUserInfo" @updatePassword="handleUpdatePassword" />
+
             <!-- Additional fields for apprenant -->
             <div class="w-full grid grid-cols-2 gap-4" v-if="editUserInfo.role === 'apprenant'">
                 <!-- Matricule Input -->
@@ -84,6 +87,7 @@ import axios from 'axios';
 import { useUserStore } from '@/stores/user';
 import { useDepartmentsStore } from '@/stores/departments';
 import FormIndicator from '@/components/forms/FormIndicator.vue';
+import UpdatePassword from '@/components/user/UpdatePassword.vue';
 
 const props = defineProps({
     user: {
