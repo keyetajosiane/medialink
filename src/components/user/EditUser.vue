@@ -1,6 +1,23 @@
 <template>
     <div class="edit-user-account">
         <h1 class="text-2xl font-bold mb-4">Edit User Account</h1>
+        <!-- update error section -->
+        <div v-if="updateError" class="bg-red-600 border border-red-700 rounded p-2 mb-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <svg class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M18.364 5.636a9.004 9.004 0 011.414 1.414M12 2v10m6.364-6.364L12 12m0 0l-6.364-6.364M6 12l6 6m0 0l6-6m-6 6V12" />
+                    </svg>
+                    <p>{{ updateError }}</p>
+                </div>
+                <button @click="clearError" class="text-white">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
         <!-- Form to edit user account will go here -->
         <form @submit.prevent="submitForm">
             <!-- Input fields for account information -->
@@ -25,8 +42,7 @@
 
                 <!-- Departement Select -->
                 <FormSelect label="Département" :options="departements" selectId="departement"
-                    v-model="editUserInfo.departement_id" defaultOption="Choose departement"
-                    />
+                    v-model="editUserInfo.departement_id" defaultOption="Choose departement" />
             </div>
 
             <!-- Additional fields for membre_administratif -->
@@ -36,7 +52,7 @@
             </div>
 
             <!-- Addiational fields for formateur -->
-            <div v-if="editUserInfo.role === 'formateur'" >
+            <div v-if="editUserInfo.role === 'formateur'">
                 <!-- Future attributes for formateur here -->
                 <Departments :userDepartements="editUserInfo.departements" @update="handleDepartmentsChange" />
             </div>
@@ -84,6 +100,7 @@ const alert = ref(null);
 const editUserInfo = reactive({});
 const loading = ref(false);
 const departements = ref([]);
+const updateError = ref('');
 
 const emits = defineEmits(['update:editedUser']);
 
@@ -143,17 +160,38 @@ const handleDepartmentsChange = (departments) => {
     editUserInfo.departements = departments;
 };
 
+const clearError = () => {
+  updateError.value = '';
+};
+
 const submitForm = () => {
     // Logic to submit the form
     loading.value = true;
+    clearError();
     console.log(editUserInfo);
-    setTimeout(() => {
-        // Replace with actual form submission logic
-        console.log('Form submitted');
-        // TODO: Implement form submission to server or handling logic
-        loading.value = false;
-        emits('update:editedUser', editUserInfo);
-    }, 1000); // Simulate form submission after 1 second
+    const url = props.user.role === 'formateur'
+        ? `formateur/formateur/${editUserInfo.formateur_id}`
+        : props.user.role === 'apprenant'
+            ? `apprenant/apprenant/${editUserInfo.apprenant_id}`
+            : `administration_members/administration_members/${editUserInfo.id}`;
+    axios.put(url, editUserInfo)
+        .then(response => {
+            console.log(response.data);
+            emits('update:editedUser', response.data);
+        })
+        .catch(error => {
+            console.log(error);
+            if(error.response && error.response.data){
+                updateError.value = error.response.data.message;
+            }
+            else{
+                // network error
+                updateError.value = error.message;
+            }
+        })
+        .finally(() => {
+            loading.value = false;
+        })
 };
 </script>
 

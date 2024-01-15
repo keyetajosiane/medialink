@@ -2,7 +2,7 @@
     <div class="flex flex-wrap justify-around items-center">
         <div class="max-w-md">
             <!-- user_name Input -->
-            <FormInput label="user_name" inputId="user_name" type="text" v-model="accountInfo.user_name" />
+            <FormInput label="username" inputId="user_name" type="text" v-model="accountInfo.user_name" />
     
             <!-- First Name Input -->
             <FormInput label="First Name" inputId="first_name" type="text" v-model="accountInfo.first_name" />
