@@ -73,6 +73,15 @@ async isValidPassword(password) {
       return result.affectedRows || null;
    }
 
+   static async updateUserPassword(user_id, password) {
+      const conn = await createConnection();
+      // Hasher le mot de passe ici
+      const hash = await bcrypt.hash(password, 10);
+      const [result] = await conn.query('UPDATE user SET password = ? WHERE user_id = ?', [hash, user_id]);
+      conn.end();
+      return result.affectedRows || null;
+   }
+
    // ALL ABOUT UPDATE
    static async updatePassword(user_id, password) {
       const conn = await createConnection();

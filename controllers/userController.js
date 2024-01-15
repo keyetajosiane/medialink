@@ -137,6 +137,28 @@ exports.update = async (req, res) => {
     return res.json(updated_user)
 };
 
+exports.updateUserPassword = async (req, res) => {
+    const user_id = req.params.user_id;
+    const { password } = req.body;
+
+    if(!password){
+        return res.status(400).json({ message: "Password is required" })
+    }
+
+    const user = await User.findByUser_id(user_id)
+
+    if (!user) {
+        return res.status(404).json({ message: "User not found." })
+    }
+
+    try {
+        await User.updatePassword(user_id, password);
+        return res.json({ message: "Password updated successfully" })
+    } catch (error) {
+        return res.status(500).json({ message: "An error occurred while updating the password" })
+    }
+}
+
 exports.delete = async (req, res) => {
     // Récupération de l'ID de l'utilisateur
     const { user_id } = req.params;
