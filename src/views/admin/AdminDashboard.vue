@@ -30,7 +30,7 @@ const menuItems = [
         </h1>
       </header>
 
-      <div class="flex space-x-4 mb-6">
+      <div class="flex space-x-4 mb-6 flex-wrap">
         <!-- Submenu buttons -->
         <button
           class="px-4 py-2 rounded-md text-white bg-blue-500 hover:bg-blue-600"
