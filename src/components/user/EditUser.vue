@@ -36,7 +36,7 @@
             </div>
 
             <!-- password input field update -->
-            <UpdatePassword :user="editUserInfo" @updatePassword="handleUpdatePassword" />
+            <UpdatePassword :user="editUserInfo" />
 
             <!-- Additional fields for apprenant -->
             <div class="w-full grid grid-cols-2 gap-4" v-if="editUserInfo.role === 'apprenant'">
@@ -163,6 +163,7 @@ const handleUserPermissionsChange = (newPermissions) => {
 const handleDepartmentsChange = (departments) => {
     editUserInfo.departements = departments;
 };
+
 
 const clearError = () => {
   updateError.value = '';
