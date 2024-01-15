@@ -26,8 +26,8 @@ router.post('/apprenant-module/enrollment/', authMiddleware.authenticateToken, p
 router.post('/apprenant-module/batch/', authMiddleware.authenticateToken, permissionMiddleware.userCreatePermission, apprenantModuleController.batchEnrollApprenantsToModule);
 
 
-router.put('/apprenant/:apprenant_id',authMiddleware.authenticateToken, permissionMiddleware.userUpdatePermission, apprenantControllers.updateApprenant); // Met à jour un apprenant dans la base de données
 router.put('/apprenant/departement/:apprenant_id', departementController.update); 
+router.put('/apprenant/:apprenant_id',authMiddleware.authenticateToken, permissionMiddleware.userUpdatePermission, apprenantControllers.updateApprenant); // Met à jour un apprenant dans la base de données
 
 router.delete('/apprenant/:apprenant_id', apprenantControllers.delete); // Supprime un apprenant de la base de données
 router.delete('/apprenant/:matricule',authMiddleware.authenticateToken, permissionMiddleware.userDeletePermission, apprenantControllers.deleteByMatricule); // Supprime un apprenant de la base de données par son matricule

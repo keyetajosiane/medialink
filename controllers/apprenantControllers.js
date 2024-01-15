@@ -1,6 +1,8 @@
 const apprenant = require('../models/apprenantModels');
 const departement = require('../models/departementModels');
+const userModel = require('../models/userModels');
 const userController = require('./userController');
+const userPermissionsController = require('./userPermissionsController');
 const authController = require('./authController');
 
 
@@ -118,14 +120,34 @@ exports.updateApprenant = async (req, res) => {
     if (!_apprenant) {
         return res.status(404).json({ message: "appprenant not found." })
     };
-    for (const key of Object.keys(apprenant_update_data)) {
-        //TODO:: if the key is password, hash the password before saving it
-        _apprenant[key] = apprenant_update_data[key]
+    // update the user table
+    const user_update_data = {
+        first_name: apprenant_update_data.first_name,
+        last_name: apprenant_update_data.last_name,
+        email: apprenant_update_data.email,
+        user_name: apprenant_update_data.user_name,
+        role: apprenant_update_data.role,
+        is_admin: apprenant_update_data.is_admin
     }
-    // Mise à jour du departement dans la base de données
-    const result = await apprenant.updateApprenant(apprenant_id, _apprenant);
+    const updated_user = userModel.updateUser(_apprenant.user_id, user_update_data);
+    if (updated_user === null) {
+        return res.status(500).json({ message: "User info update failed due to an internal server error" })
+    }
+    // update the apprenant permissions
+    const updated = await userPermissionsController.updateUserPermissions(_apprenant.user_id, apprenant_update_data.permissions);
+    if(!updated){
+        return res.status(500).json({ message: "Update failed, could not update permissions" })
+    }
+
+    // Update the apprenant in the database
+    update_data = {
+        matricule: apprenant_update_data.matricule,
+        user_id: apprenant_update_data.user_id,
+        departement_id: apprenant_update_data.departement_id
+    }
+    const result = await apprenant.updateApprenant(apprenant_id, update_data);
     if (result === null) {
-        return res.status(500).json({ message: "Update failed due to an internal server error" })
+        return res.status(500).json({ message: "Apprenant update failed due to an internal server error" })
     }
     const updated_apprenant = await apprenant.findById(apprenant_id)
 
