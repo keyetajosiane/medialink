@@ -10,10 +10,14 @@
     <nav class="flex-1">
       <ul>
         <li v-for="menu in props.menuItems" :key="menu.item" class="mb-2">
-          <router-link :to="menu.link" class="flex flex-col items-center">
+          <!-- <router-link :to="menu.link" class="flex flex-col items-center">
             <span class="block w-10 h-10 bg-blue-500 rounded-lg mb-2"></span>
             <span class="text-xs text-white truncate w-full text-center">{{ menu.item }}</span>
-          </router-link>
+          </router-link> -->
+          <a href="#" class="flex flex-col items-center" @click="handleMenuClick(menu)">
+            <span class="block w-10 h-10 bg-blue-500 rounded-lg mb-2"></span>
+            <span class="text-xs text-white truncate w-full text-center">{{ menu.item }}</span>
+          </a>
         </li>
       </ul>
     </nav>
@@ -37,7 +41,8 @@ const props = defineProps({
   homeLink: {
     type: String,
     default: '/'
-  }
+  },
+  handleMenuClick: Function
 });
 </script>
 

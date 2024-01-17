@@ -1,7 +1,7 @@
 <template>
     <div class="flex h-screen bg-gray-900 text-white">
         <!-- Sidebar -->
-        <Sidebar :homeLink="props.homeLink" :menuItems="props.menuItems" />
+        <Sidebar :homeLink="props.homeLink" :menuItems="props.menuItems" :handleMenuClick="props.handleMenuClick" />
 
         <!-- Main container -->
         <div class="flex-1 flex flex-col">
@@ -23,7 +23,8 @@ import { defineProps } from 'vue';
 
 const props = defineProps({
     homeLink: String,
-    menuItems: Array
+    menuItems: Array,
+    handleMenuClick: Function
 })
 </script>
 
