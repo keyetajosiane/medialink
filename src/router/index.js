@@ -26,18 +26,23 @@ const router = createRouter({
     {
       path: '/guess',
       name: 'guess',
-      component: () => import('../components/layouts/GuestLayout.vue')
+      component: () => import('@/components/layouts/GuestLayout.vue')
     },
     {
       path: '/admin',
       name: 'admin',
-      component: () => import('../views/admin/AdminDashboard.vue'),
+      component: () => import('@/views/admin/AdminDashboard.vue'),
       meta: { requiresAuth: true, requiresAdmin: true }
     },
     {
       path: '/accounts',
       name: 'accounts',
-      component: () => import('../components/user/UserCreationForm.vue')
+      component: () => import('@/components/user/UserCreationForm.vue')
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'error404',
+      component: () => import('@/views/Error404.vue')
     }
   ]
 })
