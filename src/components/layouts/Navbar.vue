@@ -13,14 +13,14 @@
             <div class="absolute right-0 mt-2 w-48 bg-gray-800 text-white rounded-md overflow-hidden shadow-xl z-10"
                 v-if="showMenu">
                 <div class="px-4 py-2">
-                    <p class="font-bold">bad1987</p> <!-- Replace 'Username' with actual username -->
-                    <p class="text-sm">admin@example.com</p> <!-- Replace 'user@example.com' with actual user email -->
+                    <p class="font-bold">{{ user ? user.user_name : 'guess' }}</p>
+                    <p class="text-sm">{{ user ? user.email : 'guess@example.com' }}</p>
                 </div>
                 <div class="border-t border-gray-700"></div>
                 <a href="#" class="block px-4 py-2 text-sm hover:bg-blue-500" @click="updateProfilePicture">Update Profile
                     Picture</a>
                 <a href="#" class="block px-4 py-2 text-sm hover:bg-blue-500" @click="openSettings">Settings</a>
-                <a href="#" class="block px-4 py-2 text-sm hover:bg-blue-500" @click="toggleDarkMode">Toggle Dark Mode</a>
+                <!-- <a href="#" class="block px-4 py-2 text-sm hover:bg-blue-500" @click="toggleDarkMode">Toggle Dark Mode</a> -->
                 <a href="#" class="block px-4 py-2 text-sm hover:bg-blue-500" @click="logout">Logout</a>
                 <!-- Add more menu items here -->
             </div>
@@ -29,11 +29,14 @@
 </template>
 
 <script setup>
-import avatar from '../../assets/images/avatar.jpg';
-import { ref } from 'vue';
+import avatar from '@/assets/images/avatar.jpg';
+import { useUserStore } from '@/stores/user';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 
 // Show or hide the dropdown menu
 const showMenu = ref(false);
+const userStore = useUserStore();
+const user = ref(userStore.userInfo);
 
 // Toggle the dropdown menu
 const toggleMenu = () => {
@@ -57,8 +60,22 @@ const toggleDarkMode = () => {
 
 // Logout function
 const logout = () => {
-    // Your logout logic goes here
+    userStore.logout();
 };
+// Function to close the dropdown when clicking outside
+const closeDropdown = (event) => {
+  if (!event.target.closest('.relative')) {
+    showMenu.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('click', closeDropdown);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', closeDropdown);
+});
 </script>
   
 <style scoped>/* You can add additional styles if needed */</style>

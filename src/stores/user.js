@@ -68,6 +68,10 @@ export const useUserStore = defineStore('user', {
         this.loading = false
       }
     },
+    logout() {
+      this.clearUserInfo();
+      localStorage.removeItem('token');  
+    },
     async loadUsersList() {
       try {
         const usersList = await fetchUsers();
