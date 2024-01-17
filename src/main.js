@@ -6,12 +6,6 @@ import axios from 'axios'
 
 import App from './App.vue'
 import router from './router'
-import { useUserStore } from '@/stores/user'
-
-const app = createApp(App)
-
-app.use(createPinia())
-app.use(router)
 
 // set an axios interceptor that adds the token to the Authorization header
 axios.interceptors.request.use((config) => {
@@ -23,10 +17,11 @@ axios.interceptors.request.use((config) => {
     return config
 })
 
-axios.defaults.baseURL = 'http://localhost:3000/'
+const app = createApp(App)
 
-// Refresh user info
-const userStore = useUserStore();
-userStore.refreshUserInfo();
+app.use(createPinia())
+app.use(router)
+
+axios.defaults.baseURL = 'http://localhost:3000/'
 
 app.mount('#app')

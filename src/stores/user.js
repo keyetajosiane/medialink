@@ -10,6 +10,7 @@ export const useUserStore = defineStore('user', {
     userInfo: null,
     usersList: null,
     permissions: null,
+    loading: false
   }),
   getters: {
     isLoggedIn: (state) => !!state.userInfo, // Boolean indicating if the user is logged in
@@ -30,6 +31,12 @@ export const useUserStore = defineStore('user', {
     },
     // Action to refresh userInfo
     async refreshUserInfo() {
+      this.loading = true;
+      // if initialized, do nothing
+      if (this.userInfo) {
+        this.loading = false;
+        return;
+      }
       const token = localStorage.getItem('token');
       if (token) {
         try {
@@ -42,7 +49,7 @@ export const useUserStore = defineStore('user', {
             console.error(`Token error: ${error.message}`, error);
             this.clearUserInfo();
             localStorage.removeItem('token'); // Clear the token from storage
-
+            this.loading = false
             // Redirect to login page
             router.push('/guess');
 
@@ -53,6 +60,12 @@ export const useUserStore = defineStore('user', {
             console.error('Failed to fetch user info', error);
           }
         }
+        finally {
+          this.loading = false;
+        }
+      }
+      else{
+        this.loading = false
       }
     },
     async loadUsersList() {

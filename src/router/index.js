@@ -42,8 +42,9 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
+  await userStore.refreshUserInfo();
   if (to.meta.requiresAuth && !userStore.isLoggedIn) {
     next({ name: 'guess', query: { redirect: to.fullPath } });
   } else if (to.meta.requiresAdmin && !userStore.isAdmin) {
