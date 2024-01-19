@@ -66,12 +66,26 @@ class ressource {
     return result.affectedRows || null;
   }
   // update all fields of a departement object
-  static async updateRessouces(ressources_id, ressources) {
+  static async updateRessources(ressources_id, ressources) {
+  try {
     const conn = await createConnection();
-    const [result] = await conn.query('UPDATE ressources SET ? WHERE ressources_id = ?', [ressources, ressources_id]);
+    // create the SET part
+    const keys = Object.keys(ressources);
+    let sub_str = keys.join('=?, ');
+    if (!sub_str.startsWith("=?")) {
+      sub_str += "=?"
+    }
+    let update_query = `update ressources set ${sub_str} where ressources_id = ?`;
+    const values = Object.values(ressources);
+    values.push(ressources_id);
+    const [result] = await conn.query(update_query, values);
     conn.end();
-    return result.affectedRows || null;
+    return result.affectedRows;
+  } catch (error) {
+    console.error('Failed to update resources:', error);
+    return null;
   }
+}
 
   static async delete(ressources_id) {
     const conn = await createConnection();

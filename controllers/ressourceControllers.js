@@ -2,6 +2,8 @@ const ressource = require('../models/ressourceModels');
 const authController = require('../controllers/authController');
 const fs = require('fs');
 const path = require('path');
+const PDFThumbnail = require('pdf-thumbnail');
+
 const { v4: uuidv4 } = require('uuid');
 const uploadFolderPath = path.join(__dirname, '..', 'upload');
 
@@ -13,35 +15,39 @@ exports.getAll = async (req, res) => {
   })
   res.json(allressource);
 };
+
 exports.insert = async (req, res) => {
   const resourceData = req.body;
   // get current user
   const user_uid = req.user;
   const user = await authController.getCurrentUser(user_uid);
-  if(!user) return res.sendStatus(401);
+  if (!user) return res.sendStatus(401);
   resourceData.user_id = user.user_id;
+  
   // Check if title is unique
   let existingResource = await ressource.findByTitlle(resourceData.title);
   if (existingResource) {
-    // Return a 409 code and exit the function
+    // delete the uploaded file
+    fs.unlinkSync(req.files[0].path);
     return res.status(409).json({ message: "Title already exists" });
   }
 
   // Check if there is an uploaded file
-  if (!req.files) {
-    // Return a 400 code and exit the function
+  if (!req.files || req.files.length === 0) {
     return res.status(400).json({ message: "No file uploaded" });
   }
 
   try {
-    // Move uploaded file to "upload" folder
+    // Use the uploaded file information from Multer
     const uploadedFile = req.files[0];
     const uniqueFilename = `${uuidv4()}-${uploadedFile.originalname}`; // Generate a unique filename that includes the original file name
-    const filePath = path.join(__dirname, '..', 'upload', uniqueFilename); // File path in "upload" folder
-
-    // Move uploaded file to "upload" folder
-    fs.renameSync(uploadedFile.path, filePath);
-
+    // Since Multer already saved the file, we just need to update the filename
+    const oldFilePath = uploadedFile.path;
+    const newFilePath = path.join(__dirname, '..', 'upload', uniqueFilename);
+    
+    // Rename file in the upload directory with the unique filename
+    fs.renameSync(oldFilePath, newFilePath);
+    
     // Save file URL in array
     const fileURL = path.join('/upload', uniqueFilename);
 
@@ -49,7 +55,8 @@ exports.insert = async (req, res) => {
     const insertResult = await ressource.insert({ ...resourceData, url: fileURL });
 
     if (!insertResult) {
-      // Return a 500 code and exit the function
+      // delete the uploaded file
+      fs.unlinkSync(newFilePath);
       return res.status(500).json({ message: "Unable to create this resource due to an internal server error" });
     }
 
@@ -57,12 +64,13 @@ exports.insert = async (req, res) => {
     const newResource = await ressource.findByRessources_id(insertResult);
 
     // Return a 201 code and created resource
-    res.json(newResource);
+    res.status(201).json(newResource);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "An error occurred while processing your request." });
   }
 };
+
 exports.getRessourceById = async (req, res) => {
   // Récupération de l'ID de la resssource
   const { ressources_id } = req.params;
@@ -120,7 +128,7 @@ exports.updateRessource = async (req, res) => {
         uressource[key] = ressource_update_data[key]
     }
     // Mise à jour du departement dans la base de données
-    const result = await ressource.updateRessouces (ressources_id, uressource);
+    const result = await ressource.updateRessources (ressources_id, uressource);
     if(result === null){
       return res.status(500).json({message: "Update failed due to an internal server error"})
     }
@@ -197,3 +205,25 @@ exports.count = async (req, res) => {
       return res.json(cressource);
     }
 }
+
+const generateThumbnail = async (pdfFilePath) => {
+  try {
+    const abs_path = path.join(__dirname, '..', pdfFilePath);
+    const thumbnailBuffer = await PDFThumbnail.generate(abs_path, {
+      compress: {
+        type: 'JPEG',
+        options: {
+          quality: 50
+        }
+      },
+      resize: {
+        width: 240,
+        height: 240
+      }
+    });
+    return thumbnailBuffer;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
