@@ -1,7 +1,7 @@
 <template>
   <div class="file-upload-container" :class="containerClasses">
     <label :for="inputId" :class="labelClasses" :style="{ backgroundColor: color, color: textColor }">
-      <input :id="inputId" type="file" :accept="accept" :multiple="multiple" @change="handleFileUpload"
+      <input :id="inputId" type="file" :accept="accept" :multiple="multiple" ref="inputRef" @change="handleFileUpload"
         :class="inputClasses" />
       <span>{{ label }}</span>
     </label>
@@ -23,7 +23,7 @@
 
 
 <script setup>
-import { ref, computed, defineProps } from 'vue';
+import { ref, toRefs, computed, defineProps, defineEmits, watch } from 'vue';
 
 const props = defineProps({
   label: {
@@ -53,24 +53,38 @@ const props = defineProps({
   textColor: {
     type: String,
     default: '#FFFFFF' // Discord text color
+  },
+  modelValue: {
+    type: Array,
+    default: () => []
   }
 });
 
-const files = ref([]);
+const files = ref(props.modelValue);
 const error = ref('');
 
-const displayFileName = computed(() => {
-  if (props.multiple) {
-    return `${files.value.length} file(s) selected`;
-  } else {
-    return files.value[0] ? files.value[0].name : props.label;
+const emits = defineEmits(['update:modelValue']);
+
+const modelValueComputed = computed({
+  get: () => files.value,
+  set: (newValue) => {
+    files.value = newValue;
+    emits('update:modelValue', newValue);
   }
 });
 
-  // Function to delete a file
-  const deleteFile = (index) => {
-    files.value.splice(index, 1);
-  };
+const { modelValue } = toRefs(props);
+
+watch(modelValue, (newValue) => {
+  if (!newValue || newValue.length === 0) {
+    files.value = []; // Clear the internal files array
+  }
+});
+
+// Function to delete a file
+const deleteFile = (index) => {
+  files.value.splice(index, 1);
+};
 
 const handleFileUpload = (event) => {
   const selectedFiles = [...event.target.files];
@@ -99,6 +113,9 @@ const handleFileUpload = (event) => {
 
   // Append new valid files to existing ones
   files.value = [...files.value, ...validFiles];
+
+  // Emit updated model value
+  emits('update:modelValue', files.value);
 };
 
 
