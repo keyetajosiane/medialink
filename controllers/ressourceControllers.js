@@ -1,20 +1,24 @@
 const ressource = require('../models/ressourceModels');
 const authController = require('../controllers/authController');
+// const { generateThumbnail } = require('../utils/resource_helper');
 const fs = require('fs');
 const path = require('path');
-const PDFThumbnail = require('pdf-thumbnail');
 
 const { v4: uuidv4 } = require('uuid');
 const uploadFolderPath = path.join(__dirname, '..', 'upload');
 
 exports.getAll = async (req, res) => {
   const allressource = await ressource.findAll();
-  // modify the resource url to return the absolute path based on the server host
-  allressource.forEach((ressource) => {
-    ressource.url = `${req.protocol}://${req.get('host')}${ressource.url}`
-  })
-  res.json(allressource);
+  const resourcesWithThumbnails = await Promise.all(allressource.map(async (ressource) => {
+    // add thumbnail
+    // const thumbnailBuffer = await generateThumbnail(ressource.url);
+    // ressource.thumbnail = thumbnailBuffer;
+    ressource.url = `${req.protocol}://${req.get('host')}${ressource.url}`;
+    return ressource;
+  }));
+  res.json(resourcesWithThumbnails);
 };
+
 
 exports.insert = async (req, res) => {
   const resourceData = req.body;
@@ -206,24 +210,3 @@ exports.count = async (req, res) => {
     }
 }
 
-const generateThumbnail = async (pdfFilePath) => {
-  try {
-    const abs_path = path.join(__dirname, '..', pdfFilePath);
-    const thumbnailBuffer = await PDFThumbnail.generate(abs_path, {
-      compress: {
-        type: 'JPEG',
-        options: {
-          quality: 50
-        }
-      },
-      resize: {
-        width: 240,
-        height: 240
-      }
-    });
-    return thumbnailBuffer;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-};
