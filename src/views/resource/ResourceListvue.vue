@@ -19,37 +19,37 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
-import { getDocument } from 'pdfjs-dist/legacy/build/pdf';
+import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
 
 
 const resources = ref([]);
 
+// Specify the workerSrc property
+GlobalWorkerOptions.workerSrc = '/js/pdf.worker.mjs';
+
 const generateThumbnail = async (resource) => {
-  if (resource.url.endsWith('.pdf')) {
-    try {
-      const pdf = await getDocument(resource.url).promise;
-      const page = await pdf.getPage(1);
-      const viewport = page.getViewport({ scale: 1 });
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
+  const pdf = await getDocument(resource.url).promise;
+  const page = await pdf.getPage(1); // Get the first page
 
-      canvas.height = 100; // Set the height as needed
-      canvas.width = 100; // Set the width as needed
+  // Create a canvas for the page
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
 
-      const renderContext = {
-        canvasContext: context,
-        viewport: viewport,
-      };
+  // Set the scale and viewport
+  const scale = 1;
+  const viewport = page.getViewport({ scale });
 
-      await page.render(renderContext).promise;
-      resource.thumbnail = canvas.toDataURL();
-      console.log(resource);
-    } catch (error) {
-      console.error('Error generating thumbnail for PDF:', error);
-      // Handle error appropriately
-    }
-  }
-  // Add logic to handle other resource types if needed
+  // Set the canvas height and width
+  canvas.height = viewport.height;
+  canvas.width = viewport.width;
+
+  // Render the page onto the canvas
+  await page.render({ canvasContext: context, viewport }).promise;
+
+  // Convert the canvas to a data URL
+  const thumbnail = canvas.toDataURL();
+  // Add the thumbnail to the resource
+  resource.thumbnail = thumbnail;
 };
 
 const fetchResources = async () => {
