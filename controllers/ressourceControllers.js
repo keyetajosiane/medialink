@@ -176,6 +176,9 @@ exports.deleteById = async (req, res) => {
     if (result === null) {
       return res.status(500).json({message: "Delete failed due to an internal server error"})
     }
+    // delete the uploaded file
+    const abspath = path.join(__dirname, '..', dressource.url)
+    fs.unlinkSync(abspath);
     return res.json({message: "ressource deleted successfully"})
 };
 
