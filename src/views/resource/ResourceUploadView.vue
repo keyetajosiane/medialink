@@ -11,7 +11,7 @@
                     v-model="newResource.description" />
             </div>
             <FormFIleUpload class="mt-4" label="Upload files" fileInputId="files" :multiple="false"
-                v-model="newResource.files" />
+                v-model="newResource.files" maxSize=20 />
             <div class="flex flex-wrap justify-center gap-4">
                 <button type="submit"
                     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Submit</button>
