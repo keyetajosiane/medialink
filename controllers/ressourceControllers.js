@@ -44,7 +44,8 @@ exports.insert = async (req, res) => {
   try {
     // Use the uploaded file information from Multer
     const uploadedFile = req.files[0];
-    const uniqueFilename = `${uuidv4()}-${uploadedFile.originalname}`; // Generate a unique filename that includes the original file name
+    const sanitizedOriginalName = uploadedFile.originalname.replace(/\s+/g, '-');
+    const uniqueFilename = `${uuidv4()}-${sanitizedOriginalName}`;
     // Since Multer already saved the file, we just need to update the filename
     const oldFilePath = uploadedFile.path;
     const newFilePath = path.join(__dirname, '..', 'upload', uniqueFilename);
