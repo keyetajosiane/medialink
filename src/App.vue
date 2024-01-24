@@ -9,11 +9,11 @@ const userStore = useUserStore()
 let isLoading = ref(true)
 
 watch(() => userStore.loading, (newVal, oldVal) => {
-  // if (newVal) {
-  //   isLoading.value = false
-  // }
   isLoading.value = newVal
 }, { immediate: true })
+
+// load permissions
+userStore.loadPermissions()
 </script>
 
 <template>

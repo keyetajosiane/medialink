@@ -147,7 +147,7 @@ watch(async () => {
             Object.entries(response.data).forEach(([key, value]) => {
                 editUserInfo[key] = value;
             });
-            // console.log(editUserInfo);
+            console.log(editUserInfo);
         } catch (error) {
             console.error(`Failed to fetch user: ${error}`);
         }

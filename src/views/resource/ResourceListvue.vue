@@ -16,7 +16,7 @@
         <div class="flex justify-center gap-4 w-full mt-auto">
           <button @click="deleteResource(resource.ressources_id)"
             class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" v-if="canDeleteResource(resource)">Delete</button>
-          <button @click="readResource(resource.ressources_id)"
+          <button @click="readResource(resource)"
             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" v-if="resource.isPdf">Read</button>
             <a :href="resource.url" download class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" v-if="!resource.isPdf">Download</a>
         </div>
@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, defineEmits } from 'vue';
 import axios from 'axios';
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
 import { useUserStore } from '@/stores/user';
@@ -45,6 +45,8 @@ const user = ref(userStore.userInfo);
 const loading = ref(false);
 const deleteLoading = ref(false);
 
+const emit = defineEmits(['readResource']);
+
 // Specify the workerSrc property
 GlobalWorkerOptions.workerSrc = '/js/pdf.worker.mjs';
 
@@ -56,6 +58,7 @@ const generateThumbnail = async (resource) => {
     resource.thumbnail = resource.type === 'word' ? wordIcon : resource.type === 'excel' ? excelIcon : null;
     return;
   }
+  return
   const pdf = await getDocument(resource.url).promise;
   const page = await pdf.getPage(1); // Get the first page
 
@@ -121,14 +124,13 @@ const deleteResource = async (id) => {
   }
 };
 
-const readResource = (id) => {
-  // Implement resource read logic
-  console.log('Read resource with ID:', id);
-};
-
-const downloadResource = (resource) => {
-  // Implement resource download logic
-  console.log('Download resource with ID:', resource.ressources_id);
+const readResource = (resource) => {
+  const eventData = {
+    source: resource.url,
+    title: resource.title,
+    resource_owner_id: resource.user_id
+  }
+  emit('readResource', eventData);
 };
 
 onMounted(fetchResources);

@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import UserCreationForm from '@/components/user/UserCreationForm.vue';
-import UsersList from '../../components/user/UsersList.vue';
+import UsersList from '@/components/user/UsersList.vue';
 
 // Reactive state to track the current active menu
 const activeMenu = ref('update'); // Possible values: 'create', 'update', 'delete'
