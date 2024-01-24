@@ -9,7 +9,11 @@
       <!-- Upload resource form -->
       <ResourceUploadView v-if="canUploadResource()" />
     </div>
-    <ResourceReaderView v-else :source="reading_source.source" :source_title="reading_source.title" :resource_owner_id="reading_source.resource_owner_id" />
+    <ResourceReaderView v-else :source="reading_source.source" 
+    :source_title="reading_source.title" 
+    :resource_owner_id="reading_source.resource_owner_id"
+    @stoppedReading="is_reading = false"
+    />
   </div>
 </template>
   

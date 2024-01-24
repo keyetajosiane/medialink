@@ -1,14 +1,17 @@
 <template>
     <div class="bg-gray-900 text-white min-h-screen">
         <div class="container mx-auto p-4">
-            <h1 class="text-3xl mb-4">Reading {{ source_title }}</h1>
+            <div class="mb-4 flex justify-between">
+                <h1 class="text-3xl mb-4">Reading {{ source_title }}</h1>
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 text-sm rounded" @click="goBack">go back to resources</button>
+            </div>
             <vue3-pdf-app class="bg-gray-800 rounded shadow" :pdf="source" :config="config" style="height: 100vh;" />
         </div>
     </div>
 </template>
   
 <script setup>
-import { defineProps, reactive, watch, ref } from 'vue';
+import { defineProps, reactive, watch, ref, defineEmits } from 'vue';
 import Vue3PdfApp from 'vue3-pdf-app';
 import 'vue3-pdf-app/dist/icons/main.css';
 import { useUserStore } from '@/stores/user';
@@ -68,6 +71,11 @@ watch(() => {
         }
     }
 });
+
+const emit = defineEmits(['stoppedReading']);
+const goBack = () => {
+    emit('stoppedReading');
+};
 
 
 </script>

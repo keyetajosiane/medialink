@@ -33,6 +33,7 @@
 import { onMounted, ref, defineEmits } from 'vue';
 import axios from 'axios';
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
+// import PdfWorker from '@/workers/pdf.worker.min.mjs?worker';
 import { useUserStore } from '@/stores/user';
 import FormIndicator from '@/components/forms/FormIndicator.vue';
 import wordIcon from '@/assets/images/word.png';
@@ -48,7 +49,8 @@ const deleteLoading = ref(false);
 const emit = defineEmits(['readResource']);
 
 // Specify the workerSrc property
-GlobalWorkerOptions.workerSrc = '/js/pdf.worker.mjs';
+// GlobalWorkerOptions.workerSrc = PdfWorker;
+GlobalWorkerOptions.workerSrc = '/js/pdf.worker.min.js';
 
 const generateThumbnail = async (resource) => {
   const isPdf = resource.url.endsWith('.pdf');
@@ -81,6 +83,33 @@ const generateThumbnail = async (resource) => {
   // Add the thumbnail to the resource
   resource.thumbnail = thumbnail;
 };
+
+// const generateThumbnail = async (resource) => {
+//   const isPdf = resource.url.endsWith('.pdf');
+//   resource.type = resource.url.endsWith('.doc') ? 'word' : resource.url.endsWith('.docx') ? 'word' : resource.url.endsWith('.xls') ? 'excel' : resource.url.endsWith('.xlsx') ? 'excel' : 'unknown';
+//   resource.isPdf = isPdf;
+//   if(!isPdf) {
+//     resource.thumbnail = resource.type === 'word' ? wordIcon : resource.type === 'excel' ? excelIcon : null;
+//     return;
+//   }
+//   // load the pdf document
+//   const loadingTask = getDocument(resource.url);
+//   // get the first page of the pdf
+//   const pdf = await loadingTask.promise;
+//   const page = await pdf.getPage(1); // Get the first page
+//   const canvas = document.createElement('canvas');
+//   const context = canvas.getContext('2d');
+//   const viewport = page.getViewport({ scale: 1 });
+//   // Set the canvas height and width to match the pdf page
+//   canvas.height = viewport.height;
+//   canvas.width = viewport.width;
+//   // Render the page onto the canvas
+//   await page.render({ canvasContext: context, viewport }).promise;
+//   // Convert the canvas to a data URL
+//   const thumbnail = canvas.toDataURL();
+//   // Add the thumbnail to the resource
+//   resource.thumbnail = thumbnail;
+// };
 
 const fetchResources = async () => {
   try {

@@ -10,7 +10,7 @@
   "dependencies": {
     "axios": "^1.5.0",
     "flowbite": "^1.8.1",
-    "pdfjs-dist": "^4.0.379",
+    "pdfjs-dist": "2.4.456",
     "pinia": "^2.1.7",
     "vue": "^3.3.4",
     "vue-basic-alert": "^1.1.0",
