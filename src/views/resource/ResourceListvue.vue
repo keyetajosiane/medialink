@@ -58,7 +58,6 @@ const generateThumbnail = async (resource) => {
     resource.thumbnail = resource.type === 'word' ? wordIcon : resource.type === 'excel' ? excelIcon : null;
     return;
   }
-  return
   const pdf = await getDocument(resource.url).promise;
   const page = await pdf.getPage(1); // Get the first page
 
