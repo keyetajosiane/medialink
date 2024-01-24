@@ -3,9 +3,9 @@
     <div class="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
         <form @submit.prevent="handleLogin"
             class="w-full max-w-md p-8 bg-gray-800 rounded-lg shadow-lg transform transition duration-500 hover:scale-105">
-            <div class="flex items-center justify-center mb-6">
-                <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg" alt="Your Logo"
-                    class="w-12 h-auto mr-4"> <!-- Adjusted with Tailwind classes -->
+            <div class="flex flex-col items-center mb-6">
+                <img :src="logo" alt="Your Logo"
+                    class="w-50 h-auto mr-4 rounded-md"> <!-- Adjusted with Tailwind classes -->
                 <h2 class="text-3xl font-bold text-center">Login</h2>
             </div>
             <FormInput label="Username" inputId="username" type="text" v-model="loginForm.username" />
@@ -30,6 +30,7 @@ import { initFlowbite } from 'flowbite';
 import VueBasicAlert from 'vue-basic-alert';
 import { useUserStore } from '@/stores/user';
 import { useRouter, useRoute } from 'vue-router';
+import logo from '@/assets/images/logo/cis-logo.jpeg';
 
 const loginForm = ref({
     username: '',

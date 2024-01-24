@@ -2,7 +2,7 @@
     <nav class="flex items-center justify-between bg-gray-800 p-4 shadow-lg">
         <div class="flex items-center">
             <!-- Your app's logo -->
-            <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg" alt="Logo" class="h-8 w-8 mr-2" />
+            <img :src="logo" alt="Logo" class="h-auto w-[100px] mr-2" />
             <span class="text-xl font-bold text-white">Mediatheque CIS</span>
         </div>
         <div class="relative">
@@ -32,6 +32,7 @@
 import avatar from '@/assets/images/avatar.jpg';
 import { useUserStore } from '@/stores/user';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import logo from '@/assets/images/logo/cis-logo.jpeg';
 
 // Show or hide the dropdown menu
 const showMenu = ref(false);
