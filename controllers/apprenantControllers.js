@@ -20,7 +20,7 @@ exports.getAll = async (req, res) => {
 };
 exports.insert = async (req, res) => {
     const create_data = req.body;
-    const _auth_user = authController.getCurrentUser(req.user);
+    const _auth_user = await authController.getCurrentUser(req.user);
     // check if the matricule is unique
     if(!create_data.matricule){
         res.status(400).json({ message: "matricule is required" });
