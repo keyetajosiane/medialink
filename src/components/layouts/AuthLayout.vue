@@ -1,12 +1,12 @@
 <template>
-    <div class="flex h-screen bg-gray-900 text-white">
-        <!-- Sidebar -->
-        <Sidebar :homeLink="props.homeLink" :menuItems="props.menuItems" :handleMenuClick="props.handleMenuClick" />
-
+    <div class="flex flex-col h-screen overflow-hidden bg-gray-900 text-white">
+        <!-- Navbar -->
+        <Navbar />
+        
         <!-- Main container -->
-        <div class="flex-1 flex flex-col">
-            <!-- Navbar -->
-            <Navbar />
+        <div class="flex-1 flex overflow-hidden mt-16" style="height: calc(100vh - 64px);">
+            <!-- Sidebar -->
+            <Sidebar :homeLink="props.homeLink" :menuItems="props.menuItems" :handleMenuClick="props.handleMenuClick" />
 
             <!-- Main content area -->
             <main class="flex-1 overflow-y-auto p-4">

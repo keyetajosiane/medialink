@@ -20,3 +20,26 @@ userStore.loadPermissions()
   <WaitingPageVue v-if="isLoading" />
   <RouterView v-else />
 </template>
+
+<style>
+body {
+  max-height: 100vh;
+  overflow: hidden;
+}
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #2f3136;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #7289da;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #677bc4;
+}
+</style>
