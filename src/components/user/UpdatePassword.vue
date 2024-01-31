@@ -1,17 +1,25 @@
 <template>
     <vue-basic-alert ref="alert" :duration="1000" :closeIn="8000" />
-    <div class="grid grid-cols-3 gap-4 items-center">
-        <FormInput label="Update the Password" inputId="password" type="password" v-model="password" />
+
+    <div class="grid gap-4 items-center md:grid-cols-2">
+
+        <FormInput label="Update the Password" inputId="password" type="password" v-model="password"
+            class="lg:col-span-1" />
+
         <button
-            type="button"
-            class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            @click="handlePasswordChange"
-        >
+            class="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 lg:col-span-1"
+            @click="handlePasswordChange">
             Change Password
         </button>
+
+
         <FormIndicator v-if="loading" message="Updating password ..." class="text-white" />
+
     </div>
 </template>
+
+
+
 
 <script setup>
 import { ref, defineProps, defineEmits, onMounted } from 'vue';

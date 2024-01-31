@@ -1,36 +1,62 @@
 <template>
     <vue-basic-alert ref="alert" :duration="1000" :closeIn="8000" />
+
     <div class="overflow-x-auto shadow-md sm:rounded-lg">
-        <table class="min-w-full bg-gray-900">
-            <thead class="bg-gray-700">
-                <tr>
-                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm text-gray-400">Name</th>
-                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm text-gray-400">Email</th>
-                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm text-gray-400">Role</th>
-                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm text-gray-400">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="user in users" :key="user.id" class="border-b border-gray-800 hover:bg-gray-600 transition duration-300">
-                    <td class="text-left py-3 px-4 text-gray-200">{{ `${user.first_name} ${user.last_name}` }}</td>
-                    <td class="text-left py-3 px-4 text-gray-200">{{ user.email }}</td>
-                    <td class="text-left py-3 px-4 text-gray-200">{{ user.role }}</td>
-                    <td class="text-left py-3 px-4">
-                        <button @click="editUser(user)"
-                            class="px-4 py-2 bg-blue-600 text-white text-xs font-bold mr-3 rounded hover:bg-blue-700 transition duration-300">Edit</button>
-                        <button @click="deleteUser(user)"
-                            class="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded hover:bg-red-700 transition duration-300">Delete</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <table class="w-full text-sm text-left text-gray-500 bg-gray-700 rounded-lg">
+                <thead class="text-xs text-white uppercase">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">
+                            Name
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Email
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Role
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="user in users" :key="user.id" class="bg-gray-800 border-b hover:bg-gray-600">
+                        <td class="px-6 py-4 text-white">
+                            {{ `${user.first_name} ${user.last_name}` }}
+                        </td>
+                        <td class="px-6 py-4 text-white">
+                            {{ user.email }}
+                        </td>
+                        <td class="px-6 py-4 text-white">
+                            {{ user.role }}
+                        </td>
+                        <td class="px-6 py-4 flex">
+                            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2 flex-1"
+                                @click="editUser(user)">
+                                Edit
+                            </button>
+
+                            <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex-1"
+                                @click="deleteUser(user)">
+                                Delete
+                            </button>
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
         <!-- editing section -->
         <div v-if="isEditing" class="mt-20" ref="editSection">
             <EditUser :user="editingUser" @update:editedUser="closeEdit" />
         </div>
+
     </div>
 </template>
+
 
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue';

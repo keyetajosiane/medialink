@@ -1,27 +1,30 @@
 <template>
-    <div class="edit-user-account">
+    <div class="edit-user-account w-full">
         <h1 class="text-2xl font-bold mb-4">Edit User Account</h1>
         <!-- update error section -->
         <div v-if="updateError" class="bg-red-600 border border-red-700 rounded p-2 mb-4">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col md:flex-row items-center justify-between">
                 <div class="flex items-center">
                     <svg class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M18.364 5.636a9.004 9.004 0 011.414 1.414M12 2v10m6.364-6.364L12 12m0 0l-6.364-6.364M6 12l6 6m0 0l6-6m-6 6V12" />
                     </svg>
-                    <p>{{ updateError }}</p>
+                    <p class="text-sm md:text-base">{{ updateError }}</p>
                 </div>
-                <button @click="clearError" class="text-white">
+                <button @click="clearError" class="text-white text-sm md:text-base">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
         </div>
+
         <!-- Form to edit user account will go here -->
-        <form @submit.prevent="submitForm">
+        <form @submit.prevent="submitForm" class="grid grid-cols-1 gap-4">
+
             <!-- Input fields for account information -->
-            <div class="w-full grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-4">
+
                 <!-- user_name Input -->
                 <FormInput label="user_name" inputId="user_name" type="text" v-model="editUserInfo.user_name" disabled />
 
@@ -33,47 +36,58 @@
 
                 <!-- Email Input -->
                 <FormInput label="Email" inputId="email" type="email" v-model="editUserInfo.email" />
+
             </div>
 
             <!-- password input field update -->
             <UpdatePassword :user="editUserInfo" />
 
             <!-- Additional fields for apprenant -->
-            <div class="w-full grid grid-cols-2 gap-4" v-if="editUserInfo.role === 'apprenant'">
+            <div class="grid grid-cols-2 gap-4" v-if="editUserInfo.role === 'apprenant'">
+
                 <!-- Matricule Input -->
                 <FormInput label="Matricule" inputId="matricule" type="text" v-model="editUserInfo.matricule" />
 
                 <!-- Departement Select -->
                 <FormSelect label="Département" :options="departements" selectId="departement"
                     v-model="editUserInfo.departement_id" defaultOption="Choose departement" />
+
             </div>
 
             <!-- Additional fields for membre_administratif -->
-            <div class="w-full grid grid-cols-2 gap-4" v-if="editUserInfo.role === 'membre_administratif'">
+            <div class="grid grid-cols-2 gap-4" v-if="editUserInfo.role === 'membre_administratif'">
+
                 <!-- Poste Input -->
                 <FormInput label="Poste" inputId="poste" type="text" v-model="editUserInfo.poste" />
+
             </div>
 
             <!-- Addiational fields for formateur -->
             <div v-if="editUserInfo.role === 'formateur'">
+
                 <!-- Future attributes for formateur here -->
                 <Departments :userDepartements="editUserInfo.departements" @update="handleDepartmentsChange" />
+
             </div>
 
-            <div class="">
-                <!-- Permissions selection -->
-                <PermissionsManager :userPermissions="editUserInfo.permissions" @update="handleUserPermissionsChange" />
-            </div>
+            <!-- Permissions selection -->
+            <PermissionsManager :userPermissions="editUserInfo.permissions" @update="handleUserPermissionsChange" />
 
             <!-- Submit button -->
             <div class="grid grid-cols-2 gap-4 items-center m-4">
+
                 <button type="submit"
-                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
                     Update Account
                 </button>
+
+
                 <FormIndicator v-if="loading" message="Updating account ..." class="text-white" />
+
             </div>
+
         </form>
+
     </div>
 </template>
 

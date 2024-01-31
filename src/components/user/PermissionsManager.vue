@@ -5,7 +5,7 @@
                 <h2 class="text-white text-2xl font-bold mb-4 text-center">Permissions</h2>
             </div>
             <div class="p-6">
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="grid lg:grid-cols-3 md:grid-cols-2 gap-6">
                     <div v-for="(permissions, group) in groupedPermissions" :key="group"
                         class="mb-6 bg-discord-light rounded-md p-4">
                         <h3 class="text-white text-lg font-semibold mb-3">{{ resolveGroupName(group) }}</h3>
@@ -22,6 +22,7 @@
         </div>
     </div>
 </template>
+
   
 <script setup>
 import { ref, computed, defineProps, watchEffect, onMounted } from 'vue';
